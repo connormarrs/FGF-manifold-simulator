@@ -70,6 +70,8 @@ class DFGF_S1(DFGF.DFGF):
 
 		# pool.close()
 		# pool.join()
+
+		#try with propermultiprocessing
 		for trialNum in np.arange(self.numTrials):
 			thread = threading.Thread(target = self.computeTrial, args =(trialNum,))
 			thread.start()
