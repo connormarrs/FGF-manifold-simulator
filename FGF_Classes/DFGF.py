@@ -1,15 +1,12 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
-import tensorflow.experimental.numpy as tnp
-import math
 
 class DFGF:
 	#parameters for the simulation
 	s = 0.0
 	n = 0
 	numTrials = 0
-	isDirichlet  = True
+	isDirichlet = None
+	useThreads = None
 	def __init__(self):
 		pass
 	#eigenvalues and eigenvectors for the discrete fractional gaussian field
@@ -29,10 +26,6 @@ class DFGF:
 	trialData = {}
 	maximaVector = None
 	meanOfMaxima = 0
-
-
-
-
 
 	########################################
 	#           Getters & Setters          #
@@ -56,8 +49,10 @@ class DFGF:
 		self.ceofficients = coeffs
 	def setEigenValues(self, vals):
 		self.eigenValues = vals
+	def setEigenVectors(self, vecs):
+		self.eigenVectors = vecs
 
 	def reuseArrays(self, eigenValues, eigenVectors, sample):
-		self. eigenValues = setEigenValues
-		self.eigenVectors = getEigenVectors
-		self.sample = sample
+		self.setEigenValues(eigenValues)
+		self.setEigenVectors(eigenVectors)
+		self.setSample(sample)

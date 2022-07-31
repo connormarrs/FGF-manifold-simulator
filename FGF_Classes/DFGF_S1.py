@@ -1,20 +1,21 @@
 import DFGF
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
-import tensorflow.experimental.numpy as tnp
+# import tensorflow as tf
+# import tensorflow.experimental.numpy as tnp
 import math
+import csv
 import threading
-import multiprocessing as mp
 
 class DFGF_S1(DFGF.DFGF):
 	
-	def __init__(self, sRange, n, numTrials, isDirchlet, compute):
+	def __init__(self, sRange, n, numTrials, isDirchlet, compute, useThreads):
 		#set parameters
 		self.sRange = sRange
 		self.n=n
 		self.numTrials = numTrials
 		self.isDirchlet = isDirchlet
+		self.useThreads = useThreads
 
 		if compute:
 			self.computeSample()
@@ -39,7 +40,7 @@ class DFGF_S1(DFGF.DFGF):
 			tempEigenVectorCosines = np.arange(1, math.ceil(self.n/2)+1)
 			sines = (np.sin(2*np.pi*k/self.n * tempEigenVectorSines))
 			cosines = np.cosine(2*np.pi*k/self.n * tempEigenVectorCosines)
-			return np.append(consines,sines)
+			return np.append(cosines,sines)
 		elif self.isDirchlet == True:
 			tempEigenVectorSines = np.arange(1,math.floor(self.n/2)+1)
 			sines = (np.sin(2*np.pi*k/self.n * tempEigenVectorSines))
@@ -60,27 +61,49 @@ class DFGF_S1(DFGF.DFGF):
 		self.trialData[trialNum] = self.evaluate(trialNum)
 
 	def runTrials(self):
-		# # python multiprocessing
-		# num_workers = mp.cpu_count()
-		# pool = mp.Pool(num_workers)
-		# pool.map(self.computeTrial, [*range(self.numTrials)])
-		# pool.close()
-		# pool.join()
+		if self.useThreads:
+			# python threading
+			threads = []
+			for trialNum in np.arange(self.numTrials):
+				thread = threading.Thread(target = self.computeTrial, args =(trialNum,))
+				thread.start()
+				threads.append(thread)
+			for thread in threads:
+				thread.join()
+		else:
+			# no threading
+			for trialNum in np.arange(self.numTrials):
+				self.computeTrial(trialNum)
 
-		# python threading
-		threads = []
-		for trialNum in np.arange(self.numTrials):
-			thread = threading.Thread(target = self.computeTrial, args =(trialNum,))
-			thread.start()
-			threads.append(thread)
-		for thread in threads:
-			thread.join()
-
-		# # no threading
-		# for trialNum in np.arange(self.numTrials):
-		# 	self.computeTrial(trialNum)
-dfgf = DFGF_S1(.05, 1000, 50000, True, True)
+# Instantiate a DFGF to test its
+num_trials = 20000
+n_val = 10000
+dfgf = DFGF_S1(.5, n_val, num_trials, True, True, False)
 
 dfgf.runTrials()
-print(len(dfgf.getTrialData()))
-#print(len(dfgf.getTrialData()))
+
+print("Completed running trials")
+
+# write some shitty code to compute the mean
+emp_mean_of_max = np.mean(
+	np.array(
+		[np.max(dfgf.sample[j]) for j in range(num_trials)]
+	)
+)
+
+# make a numTrials x 2 array to hold max values
+max_n_array = []
+for j in range(num_trials):
+	max_n_array.append(
+		[np.max(dfgf.sample[j]), emp_mean_of_max]
+	)
+
+# Write its sample random number data to a csv
+with open('../Data/MaxDist/python_random_number_data_n10000_trials20000.csv', 'w') as file:
+	writer = csv.writer(file)
+	writer.writerows(max_n_array)
+
+print("Completed")
+
+# Write its trial data to a csv
+# TODO
