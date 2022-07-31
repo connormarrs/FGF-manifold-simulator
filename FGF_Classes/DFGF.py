@@ -6,16 +6,17 @@ import math
 
 class DFGF:
 	#parameters for the simulation
-	sRange = []
+	s = 0.0
 	n = 0
 	numTrials = 0
 	isDirichlet  = True
-
+	def __init__(self):
+		pass
 	#eigenvalues and eigenvectors for the discrete fractional gaussian field
 	#their specific sizes will change depening on the degree of the approximation 
 	#and the dimension that is being approximated.
-	eigenValues = None
-	eigenVectors = None
+	eigenValues = np.array((n,1))
+	eigenVectors = np.array((n,n))
 
 	#coefficients are calculated using the eigenvectors and eigenvalues
 	coefficients = None
@@ -25,7 +26,7 @@ class DFGF:
 	sample = None
 
 	#data resulting from DFGF calculations
-	trialData = None
+	trialData = {}
 	maximaVector = None
 	meanOfMaxima = 0
 
@@ -33,15 +34,30 @@ class DFGF:
 
 
 
-	###############################
-	#           Getters           #
-	###############################
+	########################################
+	#           Getters & Setters          #
+	########################################
 
 	def getTrialData(self):
 		return self.trialData
-
 	def getMaximaVector(self):
 		return self.maximaVector
-
 	def getMeanOfMaxima(self):
 		return self.meanOfMaxima
+	def getCoefficients(self):
+		return self.coefficients
+	def getEigenValues(self):
+		return self.eigenValues
+	def getEigenVectors(self):
+		return self.eigenVectors
+	def setSample(self, sample):
+		self.sample = sample
+	def setCoefficients(self, coeffs):
+		self.ceofficients = coeffs
+	def setEigenValues(self, vals):
+		self.eigenValues = vals
+
+	def reuseArrays(self, eigenValues, eigenVectors, sample):
+		self. eigenValues = setEigenValues
+		self.eigenVectors = getEigenVectors
+		self.sample = sample
