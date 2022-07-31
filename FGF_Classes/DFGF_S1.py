@@ -60,25 +60,27 @@ class DFGF_S1(DFGF.DFGF):
 		self.trialData[trialNum] = self.evaluate(trialNum)
 
 	def runTrials(self):
-		threads = []
-		# num_workers = mp.cpu_count()  
-
+		# # python multiprocessing
+		# num_workers = mp.cpu_count()
 		# pool = mp.Pool(num_workers)
-		# tasks = np.arange(self.numTrials)
-		# for task in tasks:
-		#     pool.apply_async(self.computeTrial, args = (task,))
-
+		# pool.map(self.computeTrial, [*range(self.numTrials)])
 		# pool.close()
 		# pool.join()
 
-		#try with propermultiprocessing
+		# python threading
+		threads = []
 		for trialNum in np.arange(self.numTrials):
 			thread = threading.Thread(target = self.computeTrial, args =(trialNum,))
 			thread.start()
 			threads.append(thread)
 		for thread in threads:
 			thread.join()
-dfgf = DFGF_S1(.05, 1000, 5000, True, True)
+
+		# # no threading
+		# for trialNum in np.arange(self.numTrials):
+		# 	self.computeTrial(trialNum)
+dfgf = DFGF_S1(.05, 1000, 50000, True, True)
 
 dfgf.runTrials()
 print(len(dfgf.getTrialData()))
+#print(len(dfgf.getTrialData()))
