@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
-import tensorflow.experimental.numpy as tnp
 import math
+import multiprocessing as mp
 
 class DFGF:
 	#parameters for the simulation
@@ -10,6 +9,10 @@ class DFGF:
 	n = 0
 	numTrials = 0
 	isDirichlet  = True
+	trialDataQueue = mp.Queue()
+	eigenVectorQueue = mp.Queue()
+	coefficientsQueue = mp.Queue()
+	eigenVectorDict = {}
 	def __init__(self):
 		pass
 	#eigenvalues and eigenvectors for the discrete fractional gaussian field
@@ -17,9 +20,11 @@ class DFGF:
 	#and the dimension that is being approximated.
 	eigenValues = np.array((n,1))
 	eigenVectors = np.array((n,n))
+	denominators = np.array((n,1))
 
 	#coefficients are calculated using the eigenvectors and eigenvalues
-	coefficients = None
+	coefficients = np.array((n,n))
+	coefficientsDict = {}
 
 	#ndarray of iid standard normals
 	rng = np.random.default_rng(1020304050)
