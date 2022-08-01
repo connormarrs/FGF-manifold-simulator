@@ -19,7 +19,6 @@ class DFGF:
 	coefficients = None
 
 	#ndarray of iid standard normals
-	rng = np.random.default_rng(1020304050)
 	sample = None
 
 	#data resulting from DFGF calculations
@@ -43,6 +42,8 @@ class DFGF:
 		return self.eigenValues
 	def getEigenVectors(self):
 		return self.eigenVectors
+	def getSample(self):
+		return self.sample
 	def setSample(self, sample):
 		self.sample = sample
 	def setCoefficients(self, coeffs):
