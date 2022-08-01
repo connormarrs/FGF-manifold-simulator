@@ -3,8 +3,8 @@ import pandas as pd
 # import tensorflow.experimental.numpy as tnp
 import numpy as tnp
 import math
-import csv
-import threading
+# import csv
+# import threading
 
 class DFGF_S1(DFGF.DFGF):
 	
@@ -32,7 +32,7 @@ class DFGF_S1(DFGF.DFGF):
 		self.sample = self.rng.standard_normal((self.numTrials, self.n))
 
 	def readSample(self):
-		Jupyter_Random_Data_File = r"/Users/connormarrs/Math/FGF-manifold-simulator/Data/python_random_number_data_n100_trials100.csv"
+		Jupyter_Random_Data_File = r"~/FGF-manifold-simulator/Data/python_random_number_data_n100_trials100.csv"
 
 		colnames=[f'{i}' for i in range(100)]
 		self.sample = tnp.array(pd.read_csv(Jupyter_Random_Data_File, names=colnames))
@@ -91,7 +91,11 @@ dfgf = DFGF_S1(.5, n_val, num_trials, True, True, False, True)
 
 print(dfgf.getSample())
 
+dfgf.runTrials()
+
 print("Completed running trials")
+
+print(dfgf.getTrialData)
 
 # # write some shitty code to compute the mean
 # emp_mean_of_max = tnp.mean(
