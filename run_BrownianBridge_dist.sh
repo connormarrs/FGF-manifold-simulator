@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --partition=general                   # Name of partition
-#SBATCH --ntasks=72                           # Request 48 CPU cores
+#SBATCH --ntasks=48                           # Request 48 CPU cores
 #SBATCH --exclude=cn[66-69,71-136,153-256,265-320,325-328]
-#SBATCH --time=10:00:00                       # Job should run for up to 2 hours (for example)
-#SBATCH --mail-type=END                       # Event(s) that triggers email notification (BEGIN,END,FAIL,ALL)
+#SBATCH --time=11:00:00                       # Job should run for up to 2 hours (for example)
+#SBATCH --mail-type=ALL                      # Event(s) that triggers email notification (BEGIN,END,FAIL,ALL)
 #SBATCH --mail-user=cmarrs@bowdoin.edu      # Destination email address
 
 # Purge modules and install the correct versions of tensorflow
@@ -17,6 +17,5 @@ python3 --version
 pip install --user --upgrade pip
 pip install --upgrade --user scipy
 pip show scipy
-# pip install --user csv
 
-python3 FGF_Classes/SciPy_QMC_test.py
+python3 FGF_Classes/s_0.5_maxima_distribution.py

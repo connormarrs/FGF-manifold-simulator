@@ -15,13 +15,17 @@ dirichlet = True
 compute = True
 n_start = 1000
 n_stop = 10000
-n_step = 100
+n_step = 10
 
-s = 0.5
+s_start = 0.0
+s_stop = 0.5
+s_step = 0.01
 
 numTrials = 100
 
-linspace = np.arange(start = n_start, stop = n_stop+n_step, step = n_step)
+nvals_linspace = np.arange(start = n_start, stop = n_stop+n_step, step = n_step)
+svals_linspace = np.arange(start = s_start, stop = s_stop+n_step, step = s_step)
+
 sample = None
 eigenValues = None
 eigenVectors = None
