@@ -18,4 +18,4 @@ pip install --user --upgrade pip
 pip install --upgrade --user scipy
 pip show scipy
 
-python3 FGF_Classes/s_0.5_maxima_distribution.py
+python3 python_scripts/s_0.5_maxima_distribution.py

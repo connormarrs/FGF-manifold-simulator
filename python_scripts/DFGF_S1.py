@@ -157,7 +157,10 @@ class DFGF_S1(DFGF.DFGF):
 		pool.join()
 	# computes the maxima of each trial and places it into a numpy vector
 	def computeMaximaVector(self):
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0cde5406dcc374237b76f823683872fb0f713d25
 		self.maximaVector = np.amax(self.trialData, axis = 1)
 		
 	# computes the mean of the maxima vector
