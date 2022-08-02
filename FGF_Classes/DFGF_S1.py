@@ -115,7 +115,7 @@ class DFGF_S1(DFGF.DFGF):
 
 		# evaluate coefficient vectors using multiprocessing and places them into the associated multiprocessing queue
 		pool.map(self.computeCoefficientsHelper, [*range(self.n)])
-
+os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 		# gets the values from the multiprocessing queue and places them into the associated dictionary
 		# this ensures data is entered in the correct order and protects against racing
 		for vector in range(self.n):

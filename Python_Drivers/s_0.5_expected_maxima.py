@@ -9,6 +9,8 @@ sys.path.append('../FGF_Classes')
 
 import DFGF_S1
 
+os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
+
 # now we compute the growth of the expected maxima as a function of n.
 # set parameters for the simulation
 dirichlet = True
@@ -31,7 +33,7 @@ for n_index in range(linspace.shape[0]):
 	dfgf = DFGF_S1.DFGF_S1(s,linspace[n_index],numTrials,dirichlet,compute)
 	dfgf.runTrials()
 	dfgf.computeMaximaVector()
-	dfgf.computeMeanOfMaxima()
-	maxima[n_index] = np.array([linspace[n_index], dfgf.getMeanOfMaxima()])
+	dfgf.computeMeanOfMaxima(
+)	maxima[n_index] = np.array([linspace[n_index], dfgf.getMeanOfMaxima()])
 
 np.savetxt('../output/expected_maxima_s_'+str(s)+'_n_'+str(n_start)+'-'+str(n_stop)+'_numTrials_'+str(numTrials)+'.csv', maxima, delimiter=",")

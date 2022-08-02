@@ -9,6 +9,7 @@ sys.path.append('../FGF_Classes')
 
 import DFGF_S1
 
+os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 
 
 
