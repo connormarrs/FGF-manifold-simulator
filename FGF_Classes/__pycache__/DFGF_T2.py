@@ -1,0 +1,2 @@
+class DFGF_T2(DFGF.DFGF):
+	
