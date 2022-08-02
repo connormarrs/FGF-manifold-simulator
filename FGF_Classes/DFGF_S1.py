@@ -1,14 +1,11 @@
 import DFGF
-<<<<<<< HEAD
-=======
-import matplotlib.pyplot as plt
->>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
 import numpy as np
 import math
-import threading
 import multiprocessing as mp
 import os
+from scipy.stats import qmc
 
+# sets the number of threads available to python based on system specs
 os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 
 class DFGF_S1(DFGF.DFGF):
@@ -16,37 +13,29 @@ class DFGF_S1(DFGF.DFGF):
 	def __init__(self, s, n, numTrials, isDirchlet, compute):
 		#set parameters
 		self.s = s
-		self.n=n
+		self.n = n
 		self.numTrials = numTrials
 		self.isDirchlet = isDirchlet
 
 		if compute:
 			self.computeSample()
-			print("sample computed")
 			self.computeEigenValues()
-			print("eigenvalues computed")
 			self.computeEigenVectors()
-			print("eigenvectors computed")
 			self.computeCoefficients()
-			print("coefficients computed")
 
-
+	# computes the samples of random vectors and stores them as a numpy array in samples
 	def computeSample(self):
-<<<<<<< HEAD
-		# could use an nxnxnumTrials matrix and matrix multiplication but this could take up huge amounts of memory...right?
-=======
->>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
-		self.sample = self.rng.standard_normal((self.numTrials, self.n))
-		# replace with scipy rng^^
+		dist = qmc.MultiVariateNormalQMC(
+			mean=np.zeros(self.n)
+		)
 
-<<<<<<< HEAD
-	# uses numpy operations to compute the vector of eigenvalues
-	# the eigenvalues can be passed to other instances of DFGF_S1 with the same n value
+		# generate an array of numTrials samples
+		self.sample = np.array(
+			dist.random(self.numTrials)
+		)
+
+	# compute the eigenvalues and stores them for future use
 	def computeEigenValues(self):
-		# tempVector of integer m values ranging from 1 to ceil(n/2)
-=======
-	def computeEigenValues(self):
->>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
 		tempVector = np.arange(1, math.ceil(self.n/2)+1)
 		# first calculate the eigenvalues associated with cosine eigenvectors
 		self.eigenValues = self.n**2/(2*np.pi**2)*(1-np.cos(2*np.pi*(tempVector)/self.n))
@@ -140,20 +129,13 @@ class DFGF_S1(DFGF.DFGF):
 	def evaluate(self,trialNum):
 		return np.dot(self.coefficients, self.sample[trialNum])
 
-<<<<<<< HEAD
-	# helper function to put results of a trial evualtion into the associated multiprocessing queue
-=======
->>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
 	def computeTrial(self, trialNum):
 		print("computing trial: ", trialNum)
 		self.trialDataQueue.put([trialNum, self.evaluate(trialNum)])
 
 	# function to evaluate all trials using multiprocessing
 	def runTrials(self):
-<<<<<<< HEAD
-=======
 		# python multiprocessing
->>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
 		print("computing trials")
 		# instantiate threadpool
 		num_workers = mp.cpu_count()
@@ -170,14 +152,3 @@ class DFGF_S1(DFGF.DFGF):
 
 		pool.close()
 		pool.join()
-<<<<<<< HEAD
-
-
-
-# dfgf = DFGF_S1(.05, 5000, 1000, True, True)
-
-# dfgf.runTrials()
-# print("length is ", len(dfgf.getTrialData()))
-# print(dfgf.coefficients.shape)
-=======
->>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
