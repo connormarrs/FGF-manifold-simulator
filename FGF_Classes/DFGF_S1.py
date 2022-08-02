@@ -1,8 +1,4 @@
 import DFGF
-<<<<<<< HEAD
-import matplotlib.pyplot as plt
-=======
->>>>>>> 520c17a8040026844910a9aaee8b96176415d090
 import numpy as np
 import math
 import multiprocessing as mp
@@ -21,6 +17,12 @@ class DFGF_S1(DFGF.DFGF):
 		self.numTrials = numTrials
 		self.isDirchlet = isDirchlet
 
+		self.eigenValues = np.zeros((self.n,1))
+		self.denominators = np.zeros((self.n,1))
+		self.eigenVectors = np.zeros((self.n,self.n))
+		self.coefficients = np.zeros((self.n,self.n))
+		self.trialData = np.zeros((self.numTrials, self.n), dtype = float)
+
 		if compute:
 			self.computeSample()
 			self.computeEigenValues()
@@ -29,15 +31,9 @@ class DFGF_S1(DFGF.DFGF):
 
 	# computes the samples of random vectors and stores them as a numpy array in samples
 	def computeSample(self):
-<<<<<<< HEAD
-		# could use an nxnxnumTrials matrix and matrix multiplication but this could take up huge amounts of memory...right?
-		self.sample = self.rng.standard_normal((self.numTrials, self.n))
-		# replace with scipy rng^^
-
 	# uses numpy operations to compute the vector of eigenvalues
 	# the eigenvalues can be passed to other instances of DFGF_S1 with the same n value
-=======
-		dist = qmc.MultiVariateNormalQMC(
+		dist = qmc.MultivariateNormalQMC(
 			mean=np.zeros(self.n)
 		)
 
@@ -47,7 +43,6 @@ class DFGF_S1(DFGF.DFGF):
 		)
 
 	# compute the eigenvalues and stores them for future use
->>>>>>> 520c17a8040026844910a9aaee8b96176415d090
 	def computeEigenValues(self):
 		tempVector = np.arange(1, math.ceil(self.n/2)+1)
 		# first calculate the eigenvalues associated with cosine eigenvectors
@@ -96,9 +91,7 @@ class DFGF_S1(DFGF.DFGF):
 		# gets the values from the multiprocessing queue and places them into the associated dictionary
 		# this ensures data is entered in the correct order and protects against racing
 		for vector in range(self.n):
-			print('getting eigenVector: ', vector)
 			temp = self.eigenVectorQueue.get()
-			print(temp[1].shape)
 			self.eigenVectorDict[temp[0]] = temp[1]
 		pool.close()
 		pool.join()
@@ -126,9 +119,7 @@ class DFGF_S1(DFGF.DFGF):
 		# gets the values from the multiprocessing queue and places them into the associated dictionary
 		# this ensures data is entered in the correct order and protects against racing
 		for vector in range(self.n):
-			print('getting coefficient: ', vector)
 			temp = self.coefficientsQueue.get()
-			print(temp[1].shape)
 			self.coefficientsDict[temp[0]] = temp[1]
 		pool.close()
 		pool.join()
@@ -142,23 +133,14 @@ class DFGF_S1(DFGF.DFGF):
 	def evaluate(self,trialNum):
 		return np.dot(self.coefficients, self.sample[trialNum])
 
-<<<<<<< HEAD
 	# helper function to put results of a trial evualtion into the associated multiprocessing queue
-=======
->>>>>>> 520c17a8040026844910a9aaee8b96176415d090
 	def computeTrial(self, trialNum):
-		print("computing trial: ", trialNum)
 		self.trialDataQueue.put([trialNum, self.evaluate(trialNum)])
 
 	# function to evaluate all trials using multiprocessing
 	def runTrials(self):
-<<<<<<< HEAD
-
-=======
->>>>>>> 520c17a8040026844910a9aaee8b96176415d090
 		# python multiprocessing
-		print("computing trials")
-		# instantiate threadpool
+		# instantiate threadpoo
 		num_workers = mp.cpu_count()
 		pool  = mp.Pool(num_workers)
 		# evaluate trials
@@ -167,21 +149,17 @@ class DFGF_S1(DFGF.DFGF):
 		# gets the trial data from the associated multiprocessing queue and places them into the associated dictionary
 		# this ensures data is entered in the correct order and protects against racing
 		for trial in range(self.numTrials):
-			print('getting trial: ', trial)
 			temp = self.trialDataQueue.get()
 			self.trialDataDict[temp[0]] = temp[1]
 		for i in range(self.numTrials):
 			self.trialData[i] = self.trialDataDict[i]
 		pool.close()
 		pool.join()
-<<<<<<< HEAD
 	# computes the maxima of each trial and places it into a numpy vector
 	def computeMaximaVector(self):
-		print(maximaVector.shape)
+
 		self.maximaVector = np.mean(self.trialData, axis = 1)
 		
 	# computes the mean of the maxima vector
 	def computeMeanOfMaxima(self):
 		self.meanOfMaxima = np.mean(self.maximaVector)
-=======
->>>>>>> 520c17a8040026844910a9aaee8b96176415d090

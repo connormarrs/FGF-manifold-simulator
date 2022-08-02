@@ -13,22 +13,22 @@ class DFGF:
 	#eigenvalues and eigenvectors for the discrete fractional gaussian field
 	#their specific sizes will change depening on the degree of the approximation 
 	#and the dimension that is being approximated.
-	eigenValues = np.array((n,1))
-	denominators = np.array((n,1))
+	eigenValues = None
+	denominators = None
 
-	eigenVectors = np.array((n,n))
+	eigenVectors = None
 	eigenVectorQueue = mp.Queue()
 	eigenVectorDict = {}
 
 	#coefficients are calculated using the eigenvectors and eigenvalues
-	coefficients = np.array((n,n))
+	coefficients = None
 	coefficientsQueue = mp.Queue()
 	coefficientsDict = {}
 
 	#data resulting from DFGF calculations
-	trialData = np.array((numTrials, n), dtype = float)
+	trialData = None
 	trialDataQueue = mp.Queue()
-	trialData = {}
+	trialDataDict = {}
 	maximaVector = np.array((numTrials,))
 	meanOfMaxima = 0.0
 
