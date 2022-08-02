@@ -25,21 +25,34 @@ class DFGF_T2(DFGF.DFGF):
 
 		if compute:
 			self.computeSample()
-			# self.computeEigenValues()
+			self.computeEigenValues()
 			# self.computeEigenVectors()
 			# self.computeCoefficients()
 
 	def computeSample(self):
 		dist = qmc.MultivariateNormalQMC(
-			mean = np.zeros(self.n)
+			mean = np.zeros(self.n-1)
 			)
 		for i in range(self.numTrials):
-			print(self.sample[i])
 			self.sample[i] = np.array(
-				dist.random(self.n)
+				dist.random(self.n-1)
 				)
 
 	def computeEigenValues(self):
-		
+		normalizer = np.power(self.n, 2) / (2* np.power(np.pi, 2))
+		arg1 = (2*np.pi)/(self.n) * np.arange(1, self.n)
+		arg2 = (2*np.pi)/(self.n) * np.arange(1, self.n)
+		self.eigenValues = normalizer* (2-np.subtract.outer(np.cos(arg1),np.cos(arg2)))
+		self.denominators = np.power(self.eigenValues, self.s)
 
+	def computeEigenVector(self, k1, k2):
+		tempEigenVectorSines = np.arange(1,math.floor((self.n-1)/2)+1)
+		tempEigenVectorCosines = np.arange(1, math.ceil((self.n-1)/2)+1)
+
+	def computeEigenVectors(self):
+
+
+
+ 		
 dfgf = DFGF_T2(1,100,20,True,True)
+
