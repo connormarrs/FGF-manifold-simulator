@@ -1,36 +1,49 @@
 import numpy as np
 import random as rand
 
+#Class for precomputing random grid points and eigensystem of graph laplacians
+#For use in DFGF_S2 driver
+
 class LaplaceS2:
     
-    grid = []
-    bandwidths = []
-    eigenVals = []
-    eigenVects = []
+    numPoints = 0         #number of points on the sphere that should be generated 
+    step_size = 0         #increment between size of laplacians
+    grid = []             #list of all randomly generated points
+    bandwidths = []       #list of parameters that determine edge weights
+    eigenVals = []        #list of lists of eigenvalues for each laplacian
+    eigenVects = []       #list of lists of eigenvectors for each laplacian
+    spectralGaps = []
+    computeCounts = []
     
-    def __init__(self, numPoints, boundingParam, bandwidthParam):
+    #set parameters and initialize grid and bandwidths:
+    def __init__(self, numPoints, step, boundingParam, bandwidthParam):
         self.numPoints = numPoints
+        self.step_size = step
         self.boundinParam = boundingParam
         self.bandwidthParam = bandwidthParam
         
         self.makeGrid()
         self.setBandwidths()
         
-    def makePoint():
-        theta = 2 * np.pi * random.uniform(0,1)
-        phi = np.arcsin(1 - 2 * random.uniform(0,1))
+    #chooses a single random point uniformly on the sphere
+    def makePoint(self):
+        theta = 2 * np.pi * rand.uniform(0,1)
+        phi = np.arcsin(1 - 2 * rand.uniform(0,1))
         
         return [np.cos(theta) * np.cos(phi), np.sin(theta) * np.cos(phi), np.sin(phi)]
     
-    def makeGrid():
-        for i in range(numPoints):
-            grid.append(self.makePoint())
+    #fills list of randomly chosen points on sphere
+    def makeGrid(self):
+        for i in range(self.numPoints):
+            self.grid.append(self.makePoint())
             
-    def setBandwidths():
-        for i in range(1, numPoints+1):
-            bandwidths.append(bandwidthParam / (i ** 0.25))
+    #initializes the bandwidth parameters for each laplacian
+    def setBandwidths(self):
+        for i in range(1, self.numPoints+1):
+            self.bandwidths.append(self.bandwidthParam / (i ** (1 / 16)))
             
-    def computeLegendre(x, l):
+    #helper function for computinig the l-th legendre polynomial at input x
+    def computeLegendre(self, x, l):
         if l == 0:
             return 1
         elif l == 1:
@@ -49,11 +62,12 @@ class LaplaceS2:
                 prepreValue = holdPreValue
             
             return value
-        
-    def computeEdgeWeight(p1, p2, t, n):
+    
+    #Calculates the edge weights needed between each pair of points on the sphere
+    def computeEdgeWeight(self, p1, p2, t, n):
         cosine = np.cos(np.dot(p1,p2))
         
-        term = 1;
+        term = 1
         partSum = term
         l = 1
         
@@ -64,7 +78,8 @@ class LaplaceS2:
             
         return partSum / (n * t * 4 * np.pi)
     
-    def computeLaplacian(k):
+    #Fills laplacian matrix for a certain number of points k
+    def computeLaplacian(self, k):
         laplacian = []
         
         for i in range(k):
@@ -73,7 +88,7 @@ class LaplaceS2:
             
             for j in range(k):
                 if i != j:
-                    laplacian[i].append(computeEdgeWeight(grid[i], grid[j], bandwidths[k], k))
+                    laplacian[i].append(self.computeEdgeWeight(self.grid[i], self.grid[j], self.bandwidths[k], k))
                     
                 else:
                     laplacian[i].append(0)
@@ -84,7 +99,9 @@ class LaplaceS2:
             
         return laplacian
     
-    def findSpectralGap(eVals):
+    #Calculates 2nd smallest eigenvalue of laplacian; 
+    #this value should stay bounded away from 0
+    def findSpectralGap(self, eVals):
         
         currentMin = eVals[0]
         prevMin = None
@@ -96,19 +113,40 @@ class LaplaceS2:
                 
         return prevMin
     
-    def computeEigensystems():
-        for k in range(1, numPoints + 1):
-            bool computeNewLaplacian = True
+    #Calculates eigenvectors and eigenvalues of each laplacian
+    def computeEigensystems(self):
+        for k in range(self.step_size, self.numPoints + 1, step = self.step_size):
+            computeNewLaplacian = True
             
+            computeCount = 1
             while computeNewLaplacian:
-                laplacian = computelaplacian(k)
+                laplacian = self.computelaplacian(k)
                 
                 [eVals, eVects] = np.linalg.eig(laplacian)
+
+                spectralGap = self.findSpectralGap(eVals)
                 
-                if self.findSpectralGap(eVals) > self.boundingParam:
+                #make sure the spectral gap stays bounded away from 0;
+                #if not, increase bandwidth and try again
+                if spectralGap > self.boundingParam:
                     computeNewLaplacian = False
+                    self.spectralGaps.append(spectralGap)
+                    self.computeCounts.append(computeCount)
                 else:
-                    bandwidths[k] = 0.9 * bandwidths[k] + 0.1 * bandwidths[k-1]
+                    computeCount += 1
+                    self.bandwidths[k] = 0.9 * self.bandwidths[k] + 0.1 * self.bandwidths[k-1]
                     
-            eigenVals.append(eVals)
-            eigenVects.append(eVects)
+            self.eigenVals.append(eVals)
+            self.eigenVects.append(eVects)
+
+    def getSpectralGaps(self):
+        return self.spectralGaps
+
+    def getEigenValues(self):
+        return self.eigenVals
+
+    def getEigenVectors(self):
+        return self.eigenVects
+
+    def getComputeCounts(self):
+        return self.computeCounts

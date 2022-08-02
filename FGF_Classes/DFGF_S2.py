@@ -2,7 +2,7 @@ import numpy as np
 import random as rand
 import multiprocessing as mp
 import DFGF
-from Laplace_S2 import LaplaceS2
+#from Laplace_S2 import LaplaceS2
 
 class DFGF_S2(DFGF.DFGF):
     eigenVals = []
@@ -13,7 +13,7 @@ class DFGF_S2(DFGF.DFGF):
     trialData = {}
     npTrialData = []
     maxima = {}
-    meanOfMaxima = 0
+    meanOfMaxima = 0.0
     
     def __init__(self, numPoints, s, numTrials, eigenVals, eigenVects, grid):
         self.n = numPoints
@@ -31,88 +31,88 @@ class DFGF_S2(DFGF.DFGF):
         #pool.map(self.function, list_of_args (e.g. range(self.numTrials)))
         
         for r in range(numTrials):
-            gaussianVector.append([])
+            self.gaussianVector.append([])
             for i in range(numPoints):
-                gaussianVector.append(rand.normal)
+                self.gaussianVector[i].append(rand.gauss(0,1))
         
         
         self.computeCoeffs()
         
-    def computeCoeffs():
-        self.pool.map(computeCoefficientVector, range(numPoints))
+    def computeCoeffs(self):
+        self.pool.map(self.computeCoefficientVector, range(self.numPoints))
         
         print("Coefficients length is off by: ")
-        print(len(coefficients) - numPoints)
+        print(len(self.coefficients) - self.numPoints)
         
         
-    def computeCoefficientVector(r):
+    def computeCoefficientVector(self, r):
         coeffs_r = []
         
-        for i in range(numPoints):
+        for i in range(self.numPoints):
             coeffs_r.append(self.computeCoefficientPoint(r,i))
             
         self.coefficients[r] = coeffs_r
     
-    def computeCoefficientPoint(r,i):
-        return eigenVects[numPoints - 1][i][r] / (eigenVals[numPoints - 1][i] ** s)
+    def computeCoefficientPoint(self, r,i):
+        return self.eigenVects[self.numPoints - 1][i][r] / (self.eigenVals[self.numPoints - 1][i] ** s)
     
-    def evaluatePoint(i, sampleVector):
+    def evaluatePoint(self, i, sampleVector):
         result = 0
         
-        for j in range(numPoints):
-            result = result + coefficients[i][j] * sampleVector[j]
+        for j in range(self.numPoints):
+            result = result + self.coefficients[i][j] * sampleVector[j]
             
         return result
     
-    def evaluate(r):
-        evaluations = {}
+    def evaluate(self, r):
+        evaluations = []
         
-        for i in range(numPoints):
-            evaluations[i] = (self.grid[i][0], self.grid[i][1], evaluatePoint(i, self.gaussianVector[i]))
+        for i in range(self.numPoints):
+            evaluations.append([self.grid[i][0], self.grid[i][1], self.evaluatePoint(i, self.gaussianVector[i])])
             
         self.trialData[r] = evaluations
     
-    def runTrials():
-        self.pool.map(evaluate, range(numTrials))
+    def runTrials(self):
+        self.pool.map(self.evaluate, range(self.numTrials))
         
         self.npTrialData = np.array(list(self.trialData.items()))
         self.computeMaxima()
         self.computeEmpMean()
         
         print("Trial data length is off by: ")
-        print(len(self.trialData) - numTrials)
+        print(len(self.trialData) - self.numTrials)
         
-    def computeVectorMax(r):
+    def computeVectorMax(self, r):
         data = self.trialData[r]
         M = data[0]
         for i in range(1,len(data)):
             if M < data[i]:
                 M = data[i]
         
-        maxima[r] = M
+        self.maxima[r] = M
         
-    def computeMaxima():
-        self.pool.map(computeVectorMax, range(len(self.trialData)))
+    def computeMaxima(self):
+        self.pool.map(self.computeVectorMax, range(len(self.trialData)))
         
         
-    def computeEmpMean():
-        return sum(maxima) / len(maxima)
+    def computeMeanOfMaxima(self):
+        self.meanOfMaxima = sum(self.maxima) / len(self.maxima)
                       
     
-    def getGrid():
+    def getGrid(self):
         return self.grid
                       
-    def getCoefficients():
+    def getCoefficients(self):
         return self.coefficients
     
-    def getTrialData():
+    def getTrialData(self):
         return self.trialData
     
-    def npTrialData():
+    def npTrialData(self):
         return self.npTrialData
                       
-    def getMaxima():
+    def getMaxima(self):
         return self.maxima
                       
-    def getMeanOfMaxima():
+    def getMeanOfMaxima(self):
         return self.meanOfMaxima
