@@ -10,7 +10,7 @@ class DFGF:
 
 	#ndarray of iid standard normals
 	sample = None
-	
+
 	#eigenvalues and eigenvectors for the discrete fractional gaussian field
 	#their specific sizes will change depening on the degree of the approximation 
 	#and the dimension that is being approximated.
@@ -27,10 +27,11 @@ class DFGF:
 	coefficientsDict = {}
 
 	#data resulting from DFGF calculations
+	trialData = np.array((numTrials, n), dtype = float)
 	trialDataQueue = mp.Queue()
 	trialData = {}
-	maximaVector = None
-	meanOfMaxima = 0
+	maximaVector = np.array((numTrials,))
+	meanOfMaxima = 0.0
 
 	########################################
 	#           Getters & Setters          #
