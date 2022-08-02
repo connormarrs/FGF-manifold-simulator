@@ -1,13 +1,10 @@
-import sys
 import numpy as np
 import math
 import multiprocessing as mp
 import os
 from scipy.stats import qmc
-
 import DFGF_S1
-
-os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
+import DFGF
 
 # driver file to compute the approximate pdf of the maxima of the DFGF on S1
 

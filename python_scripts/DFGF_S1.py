@@ -34,7 +34,7 @@ class DFGF_S1(DFGF.DFGF):
 	# uses numpy operations to compute the vector of eigenvalues
 	# the eigenvalues can be passed to other instances of DFGF_S1 with the same n value
 		dist = qmc.MultivariateNormalQMC(
-			mean=np.zeros(self.n)
+			mean=np.zeros(self.n-1)
 		)
 
 		# generate an array of numTrials samples
@@ -44,11 +44,11 @@ class DFGF_S1(DFGF.DFGF):
 
 	# compute the eigenvalues and stores them for future use
 	def computeEigenValues(self):
-		tempVector = np.arange(1, math.ceil(self.n/2)+1)
+		tempVector = np.arange(1, math.ceil((self.n-1)/2)+1)
 		# first calculate the eigenvalues associated with cosine eigenvectors
 		self.eigenValues = self.n**2/(2*np.pi**2)*(1-np.cos(2*np.pi*(tempVector)/self.n))
 		# create temp vector to help with computation of the sine associated eigenvalues
-		tempVector = np.arange(1, math.floor(self.n/2)+1)
+		tempVector = np.arange(1, math.floor((self.n-1)/2)+1)
 
 		# append the calculated eigenvalues to the eigenvalue vector
 		self.eigenValues = np.append(self.eigenValues, self.n**2/(2*np.pi**2)*(1-np.cos(2*np.pi*(tempVector)/self.n)))
@@ -59,22 +59,22 @@ class DFGF_S1(DFGF.DFGF):
 	# the eigenvectors can be passed to other instances of DFGF_S1 with the same n value
 	def computeEigenVector(self, k):
 		if self.isDirichlet == False:
-			tempEigenVectorSines = np.arange(1,math.floor(self.n/2)+1)
-			tempEigenVectorCosines = np.arange(1, math.ceil(self.n/2)+1)
+			tempEigenVectorSines = np.arange(1,math.floor((self.n-1)/2)+1)
+			tempEigenVectorCosines = np.arange(1, math.ceil((self.n-1)/2)+1)
 			sines = (np.sin((2*np.pi*k/self.n) * tempEigenVectorSines))
 			cosines = np.cosine((2*np.pi*k/self.n) * tempEigenVectorCosines)
 
 			# places the reseult of the caluclation into the multiprocessing queue
 			# this allows multiple threads to share data
-			self.eigenVectorQueue.put([k,np.append(cosines, sines).reshape(1,self.n)])
+			self.eigenVectorQueue.put([k,np.append(cosines, sines).reshape(1,self.n-1)])
 
 		# evaluates the dirichlet case
 		elif self.isDirichlet == True:
-			tempEigenVectorSines = np.arange(1,math.floor(self.n/2)+1)
+			tempEigenVectorSines = np.arange(1,math.floor((self.n-1)/2)+1)
 			sines = (np.sin(2*np.pi*k/self.n * tempEigenVectorSines))
 			# returns zeros instead of the cosine eigenfunctions
-			cosines = np.zeros((math.ceil(self.n/2)))
-			self.eigenVectorQueue.put([k,np.append(cosines, sines).reshape(1,self.n)])
+			cosines = np.zeros((math.ceil((self.n-1)/2)))
+			self.eigenVectorQueue.put([k,np.append(cosines, sines).reshape(1,self.n-1)])
 
 	# computes the eigenvectors for DFGF_S1 using the computeEigenVector helper function
 	# creates threads to calculate each eigenvector in then compiles them into one 2d numpy array
@@ -97,7 +97,7 @@ class DFGF_S1(DFGF.DFGF):
 		pool.join()
 
 		# takes eigenvectors from the eigenVectorDict and places them into a 2d numpy array
-		self.eigenVectors = self.eigenVectorDict[0].reshape(1,self.n)
+		self.eigenVectors = self.eigenVectorDict[0].reshape(1,self.n-1)
 		for k in np.arange(1,self.n):
 			self.eigenVectors = np.append(self.eigenVectors, self.eigenVectorDict[k],axis  = 0)
 
@@ -105,7 +105,7 @@ class DFGF_S1(DFGF.DFGF):
 	# puts coefficient vectors into the associated multiprocessing queue
 	def computeCoefficientsHelper(self, i):
 		# coefficients are computed by elementwise multiplication of an eigenvector row with the denominators
-		self.coefficientsQueue.put([i,np.multiply(self.eigenVectors[i], self.denominators).reshape(1,self.n)])
+		self.coefficientsQueue.put([i,np.multiply(self.eigenVectors[i], self.denominators).reshape(1,self.n-1)])
 
 	# computes the coefficients using the coefficients helper function and threadpools
 	def computeCoefficients(self):
@@ -125,7 +125,7 @@ class DFGF_S1(DFGF.DFGF):
 		pool.join()
 
 		# takes coefficient vectors from the dictionary and puts them into a 2d numpy array
-		self.coefficients = self.coefficientsDict[0].reshape(1,self.n)
+		self.coefficients = self.coefficientsDict[0].reshape(1,self.n-1)
 		for k in np.arange(1,self.n):
 			self.coefficients = np.append(self.coefficients, self.coefficientsDict[k],axis  = 0)
 
