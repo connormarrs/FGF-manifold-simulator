@@ -13,8 +13,8 @@ import DFGF
 # also specify the dirichlet case
 
 s = 0.5 
-n = 20
-numTrials = 30
+n = 1000
+numTrials = 10
 dirichlet = True
 compute = True
 
