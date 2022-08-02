@@ -1,15 +1,11 @@
-import sys
 import numpy as np
 import math
 import multiprocessing as mp
 import os
 from scipy.stats import qmc
 import csv
-
-sys.path.append('../FGF_Classes')
-
 import DFGF_S1
-
+import DFGF
 os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 
 # now we compute the growth of the expected maxima as a function of n.

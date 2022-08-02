@@ -48,7 +48,7 @@ class DFGF_T2(DFGF.DFGF):
 	def computeEigenVector(self, k1, k2):
 		tempEigenVectorSines = np.arange(1,math.floor((self.n-1)/2)+1)
 		tempEigenVectorCosines = np.arange(1, math.ceil((self.n-1)/2)+1)
-
+		
 	def computeEigenVectors(self):
 
 
