@@ -1,4 +1,4 @@
-import scipy
+from scipy.stats import qmc
 import numpy as np
 import csv
 
@@ -6,7 +6,7 @@ nval = 10000
 numTrials = 20000
 
 # instantiate a multivariate normal distribution with SciPy
-dist = scipy.stats.qmc.MultiVariateNormalQMC(
+dist = qmc.MultiVariateNormalQMC(
 	mean=np.zeros(nval)
 )
 
