@@ -7,6 +7,8 @@ from scipy.stats import qmc
 
 import DFGF_S1
 
+os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
+
 # driver file to compute the approximate pdf of the maxima of the DFGF on S1
 
 # first set n values and s values and number of trials for the simulation
