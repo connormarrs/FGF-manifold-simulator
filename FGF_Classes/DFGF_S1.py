@@ -1,127 +1,7 @@
-# import DFGF
-# import matplotlib.pyplot as plt
-# import numpy as np
-# # import tensorflow as tf
-# # import tensorflow.experimental.numpy as tnp
-# import math
-# import threading
-# import multiprocessing as mp
-
-# class DFGF_S1(DFGF.DFGF):
-	
-# 	def __init__(self, sRange, n, numTrials, isDirchlet, compute):
-# 		#set parameters
-# 		self.sRange = sRange
-# 		self.n=n
-# 		self.numTrials = numTrials
-# 		self.isDirchlet = isDirchlet
-
-# 		if compute:
-# 			self.computeSample()
-# 			print("sample computed")
-# 			self.computeEigenValues()
-# 			print("eigenvalues computed")
-# 			self.computeEigenVectors()
-# 			print("eigenvectors computed")
-# 			self.computeCoefficients(self.s)
-# 			print("coefficients computed")
-
-
-# 	def computeSample(self):
-# 		#could use an nxnxnumTrials matrix and matrix multiplication but this could take up huge amounts of memory...right?
-# 		self.sample = self.rng.standard_normal((self.numTrials, self.n))
-
-# 	def computeEigenValues(self):
-# 		tempVector = np.arange(1, math.ceil(self.n/2)+1)
-# 		self.eigenValues = self.n**2/(2*np.pi**2)*(1-np.cos(2*np.pi*(tempVector)/self.n))
-# 		tempVector = np.arange(1, math.floor(self.n/2)+1)
-# 		self.eigenValues = np.append(self.eigenValues, self.n**2/(2*np.pi**2)*(1-np.cos(2*np.pi*(tempVector)/self.n)))
-
-# 	def computeEigenVector(self, k):
-# 		if self.isDirchlet == False:
-# 			tempEigenVectorSines = np.arange(1,math.floor(self.n/2)+1)
-# 			tempEigenVectorCosines = np.arange(1, math.ceil(self.n/2)+1)
-# 			sines = (np.sin(2*np.pi*k/self.n * tempEigenVectorSines))
-# 			cosines = np.cosine(2*np.pi*k/self.n * tempEigenVectorCosines)
-# 			return np.append(consines,sines)
-# 		elif self.isDirchlet == True:
-# 			tempEigenVectorSines = np.arange(1,math.floor(self.n/2)+1)
-# 			sines = (np.sin(2*np.pi*k/self.n * tempEigenVectorSines))
-# 			cosines = np.zeros((math.ceil(self.n/2)))
-# 			return np.append(cosines, sines).reshape(1,self.n)
-# 	def computeEigenVectors(self):
-# 		self.eigenVectors = self.computeEigenVector(0)
-# 		for k in np.arange(1,self.n):
-# 			self.eigenVectors = np.insert(self.eigenVectors,self.eigenVectors.shape[0], self.computeEigenVector(k),axis  = 0)
-
-# 	def computeCoefficients(self,s):
-# 		denominators = np.power(self.eigenValues, -s)
-# 		self.coefficients = np.multiply(self.eigenVectors , denominators)
-
-# 	def evaluate(self,trialNum):
-# 		return np.dot(self.coefficients, self.sample[trialNum])
-
-# 	def computeTrial(self, trialNum):
-# 		trialDataQueue.put([trialNum, self.evalueate(trialNum)])
-
-# 	def runTrials(self):
-# 		# python multiprocessing
-# 		print("computing trials")
-# 		num_workers = mp.cpu_count()
-# 		tasks = [*range(self.numTrials)] 
-# 		pool = mp.Pool(num_workers)
-# 		for task in tasks:
-# 			pool.apply_async(self.computeTrial, args = (int(task), self.trialData))
-
-
-# 		for trial in range(self.numTrials):
-# 			temp = self.trialDataQueue.get()
-# 			self.trialData[temp[0]] = temp[1]
-# 		pool.close()
-# 		pool.join()
-# 		# print(num_workers)
-# 		# pool = mp.Pool(num_workers)
-# 		# pool.map(self.computeTrial, [1,2,3,4])
-# 		# pool.close()
-# 		# pool.join()
-
-# 		# python threading
-# 		# threads = []
-# 		# for trialNum in np.arange(self.numTrials):
-# 		# 	thread = threading.Thread(target = self.computeTrial, args =(trialNum,))
-# 		# 	thread.start()
-# 		# 	threads.append(thread)
-# 		# for thread in threads:
-# 		# 	thread.join()
-
-# 		# # no threading
-# 		# for trialNum in np.arange(self.numTrials):
-# 		# 	self.computeTrial(trialNum)
-
-
-
-# dfgf = DFGF_S1(.05, 5000, 1000, True, True)
-
-# dfgf.runTrials()
-# print(len(dfgf.getTrialData()))
-
-
-
 import DFGF
-<<<<<<< HEAD
-import matplotlib.pyplot as plt
 import numpy as np
-# import tensorflow as tf
-# import tensorflow.experimental.numpy as tnp
-=======
-import pandas as pd
-# import tensorflow.experimental.numpy as tnp
-import numpy as tnp
->>>>>>> 6ab0b1c058834bda88eb4e361321efb9f94346f3
 import math
-import csv
 import threading
-<<<<<<< HEAD
 import multiprocessing as mp
 import os
 
@@ -130,30 +10,15 @@ os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 class DFGF_S1(DFGF.DFGF):
 	
 	def __init__(self, s, n, numTrials, isDirchlet, compute):
-=======
-
-class DFGF_S1(DFGF.DFGF):
-	
-	def __init__(self, sRange, n, numTrials, isDirchlet, compute, useThreads, useSample):
->>>>>>> 6ab0b1c058834bda88eb4e361321efb9f94346f3
 		#set parameters
 		self.s = s
 		self.n=n
 		self.numTrials = numTrials
 		self.isDirchlet = isDirchlet
-		self.useThreads = useThreads
-		self.read_sample = useSample
 
 		if compute:
-<<<<<<< HEAD
 			self.computeSample()
 			print("sample computed")
-=======
-			if self.read_sample:
-				self.readSample()
-			else:
-				self.computeSample()
->>>>>>> 6ab0b1c058834bda88eb4e361321efb9f94346f3
 			self.computeEigenValues()
 			print("eigenvalues computed")
 			self.computeEigenVectors()
@@ -163,57 +28,60 @@ class DFGF_S1(DFGF.DFGF):
 
 
 	def computeSample(self):
-		#could use an nxnxnumTrials matrix and matrix multiplication but this could take up huge amounts of memory...right?
+		# could use an nxnxnumTrials matrix and matrix multiplication but this could take up huge amounts of memory...right?
 		self.sample = self.rng.standard_normal((self.numTrials, self.n))
+		# replace with scipy rng^^
 
-	def readSample(self):
-		Jupyter_Random_Data_File = r"/Users/connormarrs/Math/FGF-manifold-simulator/Data/python_random_number_data_n100_trials100.csv"
-
-		colnames=[f'{i}' for i in range(100)]
-		self.sample = tnp.array(pd.read_csv(Jupyter_Random_Data_File, names=colnames))
-
+	# uses numpy operations to compute the vector of eigenvalues
+	# the eigenvalues can be passed to other instances of DFGF_S1 with the same n value
 	def computeEigenValues(self):
-<<<<<<< HEAD
+		# tempVector of integer m values ranging from 1 to ceil(n/2)
 		tempVector = np.arange(1, math.ceil(self.n/2)+1)
+		# first calculate the eigenvalues associated with cosine eigenvectors
 		self.eigenValues = self.n**2/(2*np.pi**2)*(1-np.cos(2*np.pi*(tempVector)/self.n))
+		# create temp vector to help with computation of the sine associated eigenvalues
 		tempVector = np.arange(1, math.floor(self.n/2)+1)
+
+		# append the calculated eigenvalues to the eigenvalue vector
 		self.eigenValues = np.append(self.eigenValues, self.n**2/(2*np.pi**2)*(1-np.cos(2*np.pi*(tempVector)/self.n)))
+		# compute the denominators for the terms in the sum for calculating the value of the DFGF on S1
 		self.denominators = np.power(self.eigenValues, -self.s)
 
+	# computes the eigenvector for DFGF_S1
+	# the eigenvectors can be passed to other instances of DFGF_S1 with the same n value
 	def computeEigenVector(self, k):
 		if self.isDirchlet == False:
 			tempEigenVectorSines = np.arange(1,math.floor(self.n/2)+1)
 			tempEigenVectorCosines = np.arange(1, math.ceil(self.n/2)+1)
-			sines = (np.sin(2*np.pi*k/self.n * tempEigenVectorSines))
-			cosines = np.cosine(2*np.pi*k/self.n * tempEigenVectorCosines)
-			#return np.append(consines,sines).reshape(1,self.n)
-			#self.eigenVectorDict[k] = np.append(consines,sines).reshape(1,self.n)
+			sines = (np.sin((2*np.pi*k/self.n) * tempEigenVectorSines))
+			cosines = np.cosine((2*np.pi*k/self.n) * tempEigenVectorCosines)
+
+			# places the reseult of the caluclation into the multiprocessing queue
+			# this allows multiple threads to share data
 			self.eigenVectorQueue.put([k,np.append(cosines, sines).reshape(1,self.n)])
+
+		# evaluates the dirichlet case
 		elif self.isDirchlet == True:
 			tempEigenVectorSines = np.arange(1,math.floor(self.n/2)+1)
 			sines = (np.sin(2*np.pi*k/self.n * tempEigenVectorSines))
+			# returns zeros instead of the cosine eigenfunctions
 			cosines = np.zeros((math.ceil(self.n/2)))
-			#return np.append(cosines, sines).reshape(1,self.n)
-			#self.eigenVectorDict[k] = np.append(cosines, sines).reshape(1,self.n)
 			self.eigenVectorQueue.put([k,np.append(cosines, sines).reshape(1,self.n)])
-	def computeEigenVectors(self):
-		# self.eigenVectors = self.computeEigenVector(0)
-		# for k in np.arange(1,self.n):
-		# 	self.eigenVectors = np.insert(self.eigenVectors,self.eigenVectors.shape[0], self.computeEigenVector(k),axis  = 0)
-		# threads = []
-		# for k in np.arange(self.n):
-		# 	thread = threading.Thread(target = self.computeEigenVector, args =(k,))
-		# 	thread.start()
-		# 	threads.append(thread)
-		# for thread in threads:
-		# 	thread.join()
-		# self.eigenVectors = self.eigenVectorDict[0]
 
+	# computes the eigenvectors for DFGF_S1 using the computeEigenVector helper function
+	# creates threads to calculate each eigenvector in then compiles them into one 2d numpy array
+	# note that the rows of eigenVectors are of the form phi_m(k) for fixed k and varying m
+	# this will make dot products by the sample easier later
+	def computeEigenVectors(self):
+		# instantiate a threadpool to work on calculating the eigenvectors
+		# threadpool is slower for small n values
 		num_workers = mp.cpu_count()
 		pool  = mp.Pool(num_workers)
+		# evaluates computeEigenVector for each k value from 0 to n-1
 		pool.map(self.computeEigenVector, [*range(self.n)])
 
-
+		# gets the values from the multiprocessing queue and places them into the associated dictionary
+		# this ensures data is entered in the correct order and protects against racing
 		for vector in range(self.n):
 			print('getting eigenVector: ', vector)
 			temp = self.eigenVectorQueue.get()
@@ -222,56 +90,28 @@ class DFGF_S1(DFGF.DFGF):
 		pool.close()
 		pool.join()
 
+		# takes eigenvectors from the eigenVectorDict and places them into a 2d numpy array
 		self.eigenVectors = self.eigenVectorDict[0].reshape(1,self.n)
 		for k in np.arange(1,self.n):
 			self.eigenVectors = np.insert(self.eigenVectors,self.eigenVectors.shape[0], self.eigenVectorDict[k],axis  = 0)
 
-	# def computeCoefficients(self):
-	# 	denominators = np.power(self.eigenValues, -self.s)
-	# 	self.coefficients = np.multiply(self.eigenVectors , denominators)
+	# helper function for computing coefficient matrix
+	# puts coefficient vectors into the associated multiprocessing queue
 	def computeCoefficientsHelper(self, i):
-		#self.coefficientsDict[i] = np.multiply(self.eigenVectors[i], self.denominators)
+		# coefficients are computed by elementwise multiplication of an eigenvector row with the denominators
 		self.coefficientsQueue.put([i,np.multiply(self.eigenVectors[i], self.denominators)])
+
+	# computes the coefficients using the coefficients helper function and threadpools
 	def computeCoefficients(self):
-		# threads = []
-		# for i in range(self.eigenVectors.shape[0]):
-		# 	thread = threading.Thread(target = self.computeCoefficientsHelper, args =(i,))
-		# 	thread.start()
-		# 	threads.append(thread)
-		# for thread in threads:
-		# 	thread.join()
-		# self.coefficients = self.coefficientsDict[0].reshape(1,self.n)
+		# instantiate threadpool to compute coefficients
 		num_workers = mp.cpu_count()
 		pool  = mp.Pool(num_workers)
+
+		# evaluate coefficient vectors using multiprocessing and places them into the associated multiprocessing queue
 		pool.map(self.computeCoefficientsHelper, [*range(self.n)])
-=======
-		tempVector = tnp.arange(1, math.ceil(self.n/2)+1)
-		self.eigenValues = self.n**2/(2*tnp.pi**2)*(1-tnp.cos(2*tnp.pi*(tempVector)/self.n))
-		tempVector = tnp.arange(1, math.floor(self.n/2)+1)
-		self.eigenValues = tnp.append(self.eigenValues, self.n**2/(2*tnp.pi**2)*(1-tnp.cos(2*tnp.pi*(tempVector)/self.n)))
 
-	def computeEigenVector(self, k):
-		if self.isDirchlet == False:
-			tempEigenVectorSines = tnp.arange(1,math.floor(self.n/2)+1)
-			tempEigenVectorCosines = tnp.arange(1, math.ceil(self.n/2)+1)
-			sines = (tnp.sin(2*tnp.pi*k/self.n * tempEigenVectorSines))
-			cosines = tnp.cosine(2*tnp.pi*k/self.n * tempEigenVectorCosines)
-			return tnp.append(cosines,sines)
-		elif self.isDirchlet == True:
-			tempEigenVectorSines = tnp.arange(1,math.floor(self.n/2)+1)
-			sines = (tnp.sin(2*tnp.pi*k/self.n * tempEigenVectorSines))
-			cosines = tnp.zeros((math.ceil(self.n/2)))
-			return tnp.append(cosines, sines).reshape(1,self.n)
-	def computeEigenVectors(self):
-		self.eigenVectors = self.computeEigenVector(0)
-		for k in tnp.arange(1,self.n):
-			self.eigenVectors = tnp.insert(self.eigenVectors,self.eigenVectors.shape[0], self.computeEigenVector(k),axis  = 0)
-
-	def computeCoefficients(self,s):
-		denominators = tnp.power(self.eigenValues, -s)
-		self.coefficients = tnp.multiply(self.eigenVectors , denominators)
->>>>>>> 6ab0b1c058834bda88eb4e361321efb9f94346f3
-
+		# gets the values from the multiprocessing queue and places them into the associated dictionary
+		# this ensures data is entered in the correct order and protects against racing
 		for vector in range(self.n):
 			print('getting coefficient: ', vector)
 			temp = self.coefficientsQueue.get()
@@ -280,34 +120,31 @@ class DFGF_S1(DFGF.DFGF):
 		pool.close()
 		pool.join()
 
+		# takes coefficient vectors from the dictionary and puts them into a 2d numpy array
 		self.coefficients = self.coefficientsDict[0].reshape(1,self.n)
 		for k in np.arange(1,self.n):
 			self.coefficients = np.insert(self.coefficients,self.coefficients.shape[0], self.coefficientsDict[k],axis  = 0)
+
+	# evaluate a trial of DFGF_S1
 	def evaluate(self,trialNum):
-<<<<<<< HEAD
 		return np.dot(self.coefficients, self.sample[trialNum])
 
-=======
-		return tnp.dot(self.coefficients, self.sample[trialNum])
->>>>>>> 6ab0b1c058834bda88eb4e361321efb9f94346f3
+	# helper function to put results of a trial evualtion into the associated multiprocessing queue
 	def computeTrial(self, trialNum):
 		print("computing trial: ", trialNum)
 		self.trialDataQueue.put([trialNum, self.evaluate(trialNum)])
 
+	# function to evaluate all trials using multiprocessing
 	def runTrials(self):
-<<<<<<< HEAD
-		# python multiprocessing
 		print("computing trials")
-	
-		# tasks = [*range(self.numTrials)] 
-		# pool = mp.Pool(num_workers)
-		# for task in tasks:
-		# 	pool.apply_async(self.computeTrial, args = (int(task), self.trialData))
-
+		# instantiate threadpool
 		num_workers = mp.cpu_count()
 		pool  = mp.Pool(num_workers)
+		# evaluate trials
 		pool.map(self.computeTrial, [*range(self.numTrials)])
 
+		# gets the trial data from the associated multiprocessing queue and places them into the associated dictionary
+		# this ensures data is entered in the correct order and protects against racing
 		for trial in range(self.numTrials):
 			print('getting trial: ', trial)
 			temp = self.trialDataQueue.get()
@@ -316,77 +153,10 @@ class DFGF_S1(DFGF.DFGF):
 		pool.close()
 		pool.join()
 
-		# print(num_workers)
-		# pool = mp.Pool(num_workers)
-		# pool.map(self.computeTrial, [*range(self.numTrials)])
-		# pool.close()
-		# pool.join()
-
-		# python threading
-		# threads = []
-		# for trialNum in np.arange(self.numTrials):
-		# 	thread = threading.Thread(target = self.computeTrial, args =(trialNum,))
-		# 	thread.start()
-		# 	threads.append(thread)
-		# for thread in threads:
-		# 	thread.join()
-
-		# # no threading
-		# for trialNum in np.arange(self.numTrials):
-		# 	self.computeTrial(trialNum)
 
 
+# dfgf = DFGF_S1(.05, 5000, 1000, True, True)
 
-dfgf = DFGF_S1(.05, 5000, 1000, True, True)
-
-dfgf.runTrials()
-print("length is ", len(dfgf.getTrialData()))
-print(dfgf.coefficients.shape)
-=======
-		if self.useThreads:
-			# python threading
-			threads = []
-			for trialNum in tnp.arange(self.numTrials):
-				thread = threading.Thread(target = self.computeTrial, args =(trialNum,))
-				thread.start()
-				threads.append(thread)
-			for thread in threads:
-				thread.join()
-		else:
-			# no threading
-			for trialNum in tnp.arange(self.numTrials):
-				self.computeTrial(trialNum)
-
-# Instantiate a DFGF to test its
-num_trials = 200
-n_val = 100
-dfgf = DFGF_S1(.5, n_val, num_trials, True, True, False, True)
-
-print(dfgf.getSample())
-
-print("Completed running trials")
-
-# # write some shitty code to compute the mean
-# emp_mean_of_max = tnp.mean(
-# 	tnp.array(
-# 		[tnp.max(dfgf.sample[j]) for j in range(num_trials)]
-# 	)
-# )
-
-# # make a numTrials x 2 array to hold max values
-# max_n_array = []
-# for j in range(num_trials):
-# 	max_n_array.append(
-# 		[tnp.max(dfgf.sample[j]), emp_mean_of_max]
-# 	)
-
-# # Write its sample random number data to a csv
-# with open('../Data/MaxDist/python_random_number_data_n10000_trials20000.csv', 'w') as file:
-# 	writer = csv.writer(file)
-# 	writer.writerows(max_n_array)
-
-# print("Completed")
-
-# Write its trial data to a csv
-# TODO
->>>>>>> 6ab0b1c058834bda88eb4e361321efb9f94346f3
+# dfgf.runTrials()
+# print("length is ", len(dfgf.getTrialData()))
+# print(dfgf.coefficients.shape)
