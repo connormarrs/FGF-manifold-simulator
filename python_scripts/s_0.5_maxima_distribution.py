@@ -1,17 +1,10 @@
-import sys
 import numpy as np
 import math
 import multiprocessing as mp
 import os
 from scipy.stats import qmc
-
-sys.path.append('../FGF_Classes')
-
 import DFGF_S1
-
-os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
-
-
+import DFGF
 
 # driver file to compute the approximate pdf of the maxima of the DFGF on S1
 
@@ -20,8 +13,8 @@ os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 # also specify the dirichlet case
 
 s = 0.5 
-n = 4096
-numTrials = 10000
+n = 1000
+numTrials = 10
 dirichlet = True
 compute = True
 

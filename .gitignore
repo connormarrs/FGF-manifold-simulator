@@ -1,2 +1,4 @@
-
-Data/
+output/
+python_scripts/__pycache__/
+.ipynb_checkpoints/
+data/
