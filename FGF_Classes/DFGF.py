@@ -1,42 +1,33 @@
 import numpy as np
-<<<<<<< HEAD
 import math
 import multiprocessing as mp
-=======
->>>>>>> 6ab0b1c058834bda88eb4e361321efb9f94346f3
-
 class DFGF:
 	#parameters for the simulation
 	s = 0.0
 	n = 0
 	numTrials = 0
-<<<<<<< HEAD
 	isDirichlet  = True
-	trialDataQueue = mp.Queue()
-	eigenVectorQueue = mp.Queue()
-	coefficientsQueue = mp.Queue()
-	eigenVectorDict = {}
-=======
-	isDirichlet = None
-	useThreads = None
->>>>>>> 6ab0b1c058834bda88eb4e361321efb9f94346f3
-	def __init__(self):
-		pass
+
+	#ndarray of iid standard normals
+	sample = None
+	
 	#eigenvalues and eigenvectors for the discrete fractional gaussian field
 	#their specific sizes will change depening on the degree of the approximation 
 	#and the dimension that is being approximated.
 	eigenValues = np.array((n,1))
-	eigenVectors = np.array((n,n))
 	denominators = np.array((n,1))
+
+	eigenVectors = np.array((n,n))
+	eigenVectorQueue = mp.Queue()
+	eigenVectorDict = {}
 
 	#coefficients are calculated using the eigenvectors and eigenvalues
 	coefficients = np.array((n,n))
+	coefficientsQueue = mp.Queue()
 	coefficientsDict = {}
 
-	#ndarray of iid standard normals
-	sample = None
-
 	#data resulting from DFGF calculations
+	trialDataQueue = mp.Queue()
 	trialData = {}
 	maximaVector = None
 	meanOfMaxima = 0
