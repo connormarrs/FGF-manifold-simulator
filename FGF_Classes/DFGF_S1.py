@@ -1,4 +1,8 @@
 import DFGF
+<<<<<<< HEAD
+=======
+import matplotlib.pyplot as plt
+>>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
 import numpy as np
 import math
 import threading
@@ -28,14 +32,21 @@ class DFGF_S1(DFGF.DFGF):
 
 
 	def computeSample(self):
+<<<<<<< HEAD
 		# could use an nxnxnumTrials matrix and matrix multiplication but this could take up huge amounts of memory...right?
+=======
+>>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
 		self.sample = self.rng.standard_normal((self.numTrials, self.n))
 		# replace with scipy rng^^
 
+<<<<<<< HEAD
 	# uses numpy operations to compute the vector of eigenvalues
 	# the eigenvalues can be passed to other instances of DFGF_S1 with the same n value
 	def computeEigenValues(self):
 		# tempVector of integer m values ranging from 1 to ceil(n/2)
+=======
+	def computeEigenValues(self):
+>>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
 		tempVector = np.arange(1, math.ceil(self.n/2)+1)
 		# first calculate the eigenvalues associated with cosine eigenvectors
 		self.eigenValues = self.n**2/(2*np.pi**2)*(1-np.cos(2*np.pi*(tempVector)/self.n))
@@ -129,13 +140,20 @@ class DFGF_S1(DFGF.DFGF):
 	def evaluate(self,trialNum):
 		return np.dot(self.coefficients, self.sample[trialNum])
 
+<<<<<<< HEAD
 	# helper function to put results of a trial evualtion into the associated multiprocessing queue
+=======
+>>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
 	def computeTrial(self, trialNum):
 		print("computing trial: ", trialNum)
 		self.trialDataQueue.put([trialNum, self.evaluate(trialNum)])
 
 	# function to evaluate all trials using multiprocessing
 	def runTrials(self):
+<<<<<<< HEAD
+=======
+		# python multiprocessing
+>>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
 		print("computing trials")
 		# instantiate threadpool
 		num_workers = mp.cpu_count()
@@ -152,6 +170,7 @@ class DFGF_S1(DFGF.DFGF):
 
 		pool.close()
 		pool.join()
+<<<<<<< HEAD
 
 
 
@@ -160,3 +179,5 @@ class DFGF_S1(DFGF.DFGF):
 # dfgf.runTrials()
 # print("length is ", len(dfgf.getTrialData()))
 # print(dfgf.coefficients.shape)
+=======
+>>>>>>> fa6fbfa6a54a4ccef8eecc69b20131596ffee6ce
