@@ -16,12 +16,12 @@ class DFGF_T2(DFGF.DFGF):
 		self.n = n
 		self.numTrials = numTrials
 		self.isDirichlet = isDirichlet
-		self.sample = np.zeros((self.numTrials, self.n,self.n), dtype = float)
+		self.sample = np.zeros((self.numTrials, self.n-1,self.n-1), dtype = float)
 		self.eigenValues = np.zeros((self.n,self.n), dtype = float)
 		self.denominators = np.zeros((self.n,self.n), dtype = float)
 		self.eigenVectors = np.zeros((self.n,self.n,self.n), dtype = float)
 		self.coefficients = np.zeros((self.n,self.n,self.n), dtype = float)
-		self.trialData = np.zeros((self.numTrials, self.n, self.n), dtype = float)
+		self.trialData = np.zeros((self.numTrials, self.n-1, self.n-1), dtype = float)
 
 		if compute:
 			self.computeSample()
@@ -45,14 +45,33 @@ class DFGF_T2(DFGF.DFGF):
 		self.eigenValues = normalizer* (2-np.subtract.outer(np.cos(arg1),np.cos(arg2)))
 		self.denominators = np.power(self.eigenValues, self.s)
 
-	def computeEigenVector(self, k1, k2):
-		tempEigenVectorSines = np.arange(1,math.floor((self.n-1)/2)+1)
-		tempEigenVectorCosines = np.arange(1, math.ceil((self.n-1)/2)+1)
+	def computeEigenVector(self, ks):
+		k1 = ks[0]
+		k2 = ks[0]
+		if self.isDirichlet==True:
+			tempEigenVectorSinesp = np.arange(1,math.floor((self.n-1)/2)+1)
+			tempEigenVectorCosinesp= np.arange(1, math.ceil((self.n-1)/2)+1)
+			tempVectorq = np.arange(1,self.n+1)
+			sines = np.sin(2*np.pi*(1/self.n)*np.add.outer(k1*tempEigenVectorSinesp, k2*tempVectorq))
+			cosines = sines = np.sin(2*np.pi*(1/self.n)*np.add.outer(k1*tempEigenVectorCosinesp, k2*tempVectorq))
+			x = np.concatenate((cosines, sines), axis = 1)
+			print(x.shape)
+			self.eigenVectorQueue.put(np.concatenate(consines, sines, axis = 1))
+		elif self.isDirichlet == False:
+			tempEigenVectorSinesp = np.arange(1,math.floor((self.n-1)/2)+1)
+			tempVectorq = np.arange(1,self.n+1)
+			sines = np.sin(2*np.pi*(1/self.n)*np.add.outer(k1*tempEigenVectorSinesp, k2*tempVectorq))
+			#cosines = np.zeros(self.n-1,self.)
+
+
+
+
 		
 	def computeEigenVectors(self):
-
+		pass
 
 
  		
-dfgf = DFGF_T2(1,100,20,True,True)
+dfgf = DFGF_T2(1,100,20,True,False)
 
+dfgf.computeEigenVector([10,12])

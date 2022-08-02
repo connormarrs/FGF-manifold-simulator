@@ -13,8 +13,8 @@ import DFGF
 # also specify the dirichlet case
 
 s = 0.5 
-n = 4096
-numTrials = 10000
+n = 20
+numTrials = 30
 dirichlet = True
 compute = True
 
@@ -28,7 +28,7 @@ distributionDFGF.computeMaximaVector()
 # write maximaVector to csv
 maximaVector = distributionDFGF.getMaximaVector()
 maximaVector = maximaVector.reshape(maximaVector.shape[0], 1)
-np.savetxt('output/maxima_distributions_s_'+str(s)+'_n_'+str(n)+'_numTrials_'+str(numTrials)+'.csv', maximaVector, delimiter=",")
+np.savetxt('../output/maxima_distributions_s_'+str(s)+'_n_'+str(n)+'_numTrials_'+str(numTrials)+'.csv', maximaVector, delimiter=",")
 
 
 
