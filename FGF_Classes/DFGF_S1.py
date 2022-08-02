@@ -1,11 +1,15 @@
 import DFGF
+<<<<<<< HEAD
 import matplotlib.pyplot as plt
+=======
+>>>>>>> 520c17a8040026844910a9aaee8b96176415d090
 import numpy as np
 import math
-import threading
 import multiprocessing as mp
 import os
+from scipy.stats import qmc
 
+# sets the number of threads available to python based on system specs
 os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 
 class DFGF_S1(DFGF.DFGF):
@@ -13,28 +17,37 @@ class DFGF_S1(DFGF.DFGF):
 	def __init__(self, s, n, numTrials, isDirchlet, compute):
 		#set parameters
 		self.s = s
-		self.n=n
+		self.n = n
 		self.numTrials = numTrials
 		self.isDirchlet = isDirchlet
 
 		if compute:
 			self.computeSample()
-			print("sample computed")
 			self.computeEigenValues()
-			print("eigenvalues computed")
 			self.computeEigenVectors()
-			print("eigenvectors computed")
 			self.computeCoefficients()
-			print("coefficients computed")
 
-
+	# computes the samples of random vectors and stores them as a numpy array in samples
 	def computeSample(self):
+<<<<<<< HEAD
 		# could use an nxnxnumTrials matrix and matrix multiplication but this could take up huge amounts of memory...right?
 		self.sample = self.rng.standard_normal((self.numTrials, self.n))
 		# replace with scipy rng^^
 
 	# uses numpy operations to compute the vector of eigenvalues
 	# the eigenvalues can be passed to other instances of DFGF_S1 with the same n value
+=======
+		dist = qmc.MultiVariateNormalQMC(
+			mean=np.zeros(self.n)
+		)
+
+		# generate an array of numTrials samples
+		self.sample = np.array(
+			dist.random(self.numTrials)
+		)
+
+	# compute the eigenvalues and stores them for future use
+>>>>>>> 520c17a8040026844910a9aaee8b96176415d090
 	def computeEigenValues(self):
 		tempVector = np.arange(1, math.ceil(self.n/2)+1)
 		# first calculate the eigenvalues associated with cosine eigenvectors
@@ -129,14 +142,20 @@ class DFGF_S1(DFGF.DFGF):
 	def evaluate(self,trialNum):
 		return np.dot(self.coefficients, self.sample[trialNum])
 
+<<<<<<< HEAD
 	# helper function to put results of a trial evualtion into the associated multiprocessing queue
+=======
+>>>>>>> 520c17a8040026844910a9aaee8b96176415d090
 	def computeTrial(self, trialNum):
 		print("computing trial: ", trialNum)
 		self.trialDataQueue.put([trialNum, self.evaluate(trialNum)])
 
 	# function to evaluate all trials using multiprocessing
 	def runTrials(self):
+<<<<<<< HEAD
 
+=======
+>>>>>>> 520c17a8040026844910a9aaee8b96176415d090
 		# python multiprocessing
 		print("computing trials")
 		# instantiate threadpool
@@ -155,6 +174,7 @@ class DFGF_S1(DFGF.DFGF):
 			self.trialData[i] = self.trialDataDict[i]
 		pool.close()
 		pool.join()
+<<<<<<< HEAD
 	# computes the maxima of each trial and places it into a numpy vector
 	def computeMaximaVector(self):
 		print(maximaVector.shape)
@@ -163,3 +183,5 @@ class DFGF_S1(DFGF.DFGF):
 	# computes the mean of the maxima vector
 	def computeMeanOfMaxima(self):
 		self.meanOfMaxima = np.mean(self.maximaVector)
+=======
+>>>>>>> 520c17a8040026844910a9aaee8b96176415d090

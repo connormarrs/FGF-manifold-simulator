@@ -1,5 +1,4 @@
 import numpy as np
-import math
 import multiprocessing as mp
 class DFGF:
 	#parameters for the simulation
