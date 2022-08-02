@@ -29,7 +29,7 @@ class DFGF:
 	trialData = None
 	trialDataQueue = mp.Queue()
 	trialDataDict = {}
-	maximaVector = np.array((numTrials,))
+	maximaVector = np.zeros((numTrials))
 	meanOfMaxima = 0.0
 
 	########################################

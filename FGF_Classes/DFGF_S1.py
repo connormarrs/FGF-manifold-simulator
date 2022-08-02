@@ -158,7 +158,7 @@ class DFGF_S1(DFGF.DFGF):
 	# computes the maxima of each trial and places it into a numpy vector
 	def computeMaximaVector(self):
 
-		self.maximaVector = np.mean(self.trialData, axis = 1)
+		self.maximaVector = np.amax(self.trialData, axis = 1)
 		
 	# computes the mean of the maxima vector
 	def computeMeanOfMaxima(self):
