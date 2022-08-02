@@ -10,12 +10,12 @@ os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 
 class DFGF_S1(DFGF.DFGF):
 	
-	def __init__(self, s, n, numTrials, isDirchlet, compute):
+	def __init__(self, s, n, numTrials, isDirichlet, compute):
 		#set parameters
 		self.s = s
 		self.n = n
 		self.numTrials = numTrials
-		self.isDirchlet = isDirchlet
+		self.isDirichlet = isDirichlet
 
 		self.eigenValues = np.zeros((self.n,1))
 		self.denominators = np.zeros((self.n,1))
@@ -58,7 +58,7 @@ class DFGF_S1(DFGF.DFGF):
 	# computes the eigenvector for DFGF_S1
 	# the eigenvectors can be passed to other instances of DFGF_S1 with the same n value
 	def computeEigenVector(self, k):
-		if self.isDirchlet == False:
+		if self.isDirichlet == False:
 			tempEigenVectorSines = np.arange(1,math.floor(self.n/2)+1)
 			tempEigenVectorCosines = np.arange(1, math.ceil(self.n/2)+1)
 			sines = (np.sin((2*np.pi*k/self.n) * tempEigenVectorSines))
@@ -69,7 +69,7 @@ class DFGF_S1(DFGF.DFGF):
 			self.eigenVectorQueue.put([k,np.append(cosines, sines).reshape(1,self.n)])
 
 		# evaluates the dirichlet case
-		elif self.isDirchlet == True:
+		elif self.isDirichlet == True:
 			tempEigenVectorSines = np.arange(1,math.floor(self.n/2)+1)
 			sines = (np.sin(2*np.pi*k/self.n * tempEigenVectorSines))
 			# returns zeros instead of the cosine eigenfunctions
@@ -99,13 +99,13 @@ class DFGF_S1(DFGF.DFGF):
 		# takes eigenvectors from the eigenVectorDict and places them into a 2d numpy array
 		self.eigenVectors = self.eigenVectorDict[0].reshape(1,self.n)
 		for k in np.arange(1,self.n):
-			self.eigenVectors = np.insert(self.eigenVectors,self.eigenVectors.shape[0], self.eigenVectorDict[k],axis  = 0)
+			self.eigenVectors = np.append(self.eigenVectors, self.eigenVectorDict[k],axis  = 0)
 
 	# helper function for computing coefficient matrix
 	# puts coefficient vectors into the associated multiprocessing queue
 	def computeCoefficientsHelper(self, i):
 		# coefficients are computed by elementwise multiplication of an eigenvector row with the denominators
-		self.coefficientsQueue.put([i,np.multiply(self.eigenVectors[i], self.denominators)])
+		self.coefficientsQueue.put([i,np.multiply(self.eigenVectors[i], self.denominators).reshape(1,self.n)])
 
 	# computes the coefficients using the coefficients helper function and threadpools
 	def computeCoefficients(self):
@@ -115,7 +115,7 @@ class DFGF_S1(DFGF.DFGF):
 
 		# evaluate coefficient vectors using multiprocessing and places them into the associated multiprocessing queue
 		pool.map(self.computeCoefficientsHelper, [*range(self.n)])
-os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
+
 		# gets the values from the multiprocessing queue and places them into the associated dictionary
 		# this ensures data is entered in the correct order and protects against racing
 		for vector in range(self.n):
@@ -127,7 +127,7 @@ os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 		# takes coefficient vectors from the dictionary and puts them into a 2d numpy array
 		self.coefficients = self.coefficientsDict[0].reshape(1,self.n)
 		for k in np.arange(1,self.n):
-			self.coefficients = np.insert(self.coefficients,self.coefficients.shape[0], self.coefficientsDict[k],axis  = 0)
+			self.coefficients = np.append(self.coefficients, self.coefficientsDict[k],axis  = 0)
 
 	# evaluate a trial of DFGF_S1
 	def evaluate(self,trialNum):
@@ -158,7 +158,7 @@ os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 	# computes the maxima of each trial and places it into a numpy vector
 	def computeMaximaVector(self):
 
-		self.maximaVector = np.amax(self.trialData, axis = 1)
+		self.maximaVector = np.amax(self.trialData, axis = 0)
 		
 	# computes the mean of the maxima vector
 	def computeMeanOfMaxima(self):
