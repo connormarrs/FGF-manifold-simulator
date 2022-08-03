@@ -23,20 +23,19 @@ laplace = Laplace_S2.Laplace_S2(n_stop, n_step, boundingParam, bandwidthParam)
 laplace.computeEigenSystems()
 
 linspace = np.arange(start = n_start, stop = n_stop + n_step, step = n_step)
-sample = None
 eigenValues = laplace.getEigenValues()
 eigenVectors = laplace.getEigenVectors()
 #maxima = np.empty((linspace.shape[0], 2))
 
-
-for n_index in range(linspace.shape[0]):
-    dfgf = DFGF_S2.DFGF_S2(s, linspace[n_index], numTrials, eigenValues[linspace[n_index]], eigenVectors[linspace[n_index]], laplace.grid[:linspace[n_index]])
-    dfgf.runTrials()
-    dfgf.computeMaxima()
-    dfgf.computeEmpMean()
-    #maxima[n_index] = np.array([linspace[n_index], dfgf.getMeanofMaxima()])
-
-#np.savetxt('../output/expected_maxima_s_'+str(s)+'_n_'+str(n_start)+'-'+str(n_stop)+'_numTrials_'+str(numTrials)+'.csv', maxima, delimiter=",")
-
-print(min(laplace.getSpectralGaps()))
-print(laplace.getComputeCounts())
+if __name__ == '__main__':
+    for n_index in range(linspace.shape[0]):
+        dfgf = DFGF_S2.DFGF_S2(linspace[n_index], s, numTrials, eigenValues[n_index], eigenVectors[n_index], laplace.grid[:linspace[n_index]])
+        dfgf.runTrials()
+        dfgf.computeMaxima()
+        dfgf.computeMeanOfMaxima()
+        #maxima[n_index] = np.array([linspace[n_index], dfgf.getMeanofMaxima()])
+        
+    #np.savetxt('../output/expected_maxima_s_'+str(s)+'_n_'+str(n_start)+'-'+str(n_stop)+'_numTrials_'+str(numTrials)+'.csv', maxima, delimiter=",")
+    
+    print(min(laplace.getSpectralGaps()))
+    print(laplace.getComputeCounts())
