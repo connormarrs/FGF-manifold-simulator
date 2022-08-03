@@ -168,3 +168,10 @@ class DFGF_S1(DFGF.DFGF):
 	# computes the mean of the maxima vector
 	def computeMeanOfMaxima(self):
 		self.meanOfMaxima = np.mean(self.maximaVector)
+
+	def setParams(self, sample, eigenValues, eigenVectors):
+		self.setSample(sample)
+		self.setEigenValues(eigenValues)
+		self.setEigenVectors(eigenVectors)
+		self.denominators = np.power(self.eigenValues, -self.s)
+		self.computeCoefficients()
