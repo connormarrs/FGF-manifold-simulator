@@ -30,7 +30,7 @@ initial_DFGF = DFGF_S1.DFGF_S1(s_vals[0], n_vals[0], numTrials, dirichlet, True)
 def sampleDFGF(inputs):
     (nval, sval) = inputs
     # if we can, just use the old dfgf object
-    if nval==n_vals[0] & sval==s_vals[0]:
+    if nval==n_vals[0] and sval==s_vals[0]:
         DFGF_object = initial_DFGF
     else:
         # reuse old sample, eigenvectors, eigenvalues to save compute power

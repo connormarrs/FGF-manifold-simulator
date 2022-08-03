@@ -17,11 +17,11 @@ class DFGF_T2(DFGF.DFGF):
 		self.numTrials = numTrials
 		self.isDirichlet = isDirichlet
 		self.sample = np.zeros((self.numTrials, self.n-1,self.n-1), dtype = float)
-		self.eigenValues = np.zeros((self.n,self.n), dtype = float)
-		self.denominators = np.zeros((self.n,self.n), dtype = float)
-		self.eigenVectors = np.zeros((self.n,self.n,self.n), dtype = float)
-		self.coefficients = np.zeros((self.n,self.n,self.n), dtype = float)
-		self.trialData = np.zeros((self.numTrials, self.n-1, self.n-1), dtype = float)
+		self.eigenValues = np.zeros((self.n-1,self.n-1), dtype = float)
+		self.denominators = np.zeros((self.n-1,self.n-1), dtype = float)
+		self.eigenVectors = np.zeros((self.n,self.n,self.n-1,self.n-1), dtype = float)
+		self.coefficients = np.zeros((self.n,self.n,self.n-1,self.n-1), dtype = float)
+		self.trialData = np.zeros((self.numTrials, self.n, self.n), dtype = float)
 
 		if compute:
 			self.computeSample()
@@ -48,30 +48,26 @@ class DFGF_T2(DFGF.DFGF):
 	def computeEigenVector(self, ks):
 		k1 = ks[0]
 		k2 = ks[0]
-		if self.isDirichlet==True:
+		if self.isDirichlet==False:
 			tempEigenVectorSinesp = np.arange(1,math.floor((self.n-1)/2)+1)
 			tempEigenVectorCosinesp= np.arange(1, math.ceil((self.n-1)/2)+1)
-			tempVectorq = np.arange(1,self.n+1)
+			tempVectorq = np.arange(1,self.n)
 			sines = np.sin(2*np.pi*(1/self.n)*np.add.outer(k1*tempEigenVectorSinesp, k2*tempVectorq))
-			cosines = sines = np.sin(2*np.pi*(1/self.n)*np.add.outer(k1*tempEigenVectorCosinesp, k2*tempVectorq))
-			x = np.concatenate((cosines, sines), axis = 1)
-			print(x.shape)
-			self.eigenVectorQueue.put(np.concatenate(consines, sines, axis = 1))
-		elif self.isDirichlet == False:
+			cosines =  np.sin(2*np.pi*(1/self.n)*np.add.outer(k1*tempEigenVectorCosinesp, k2*tempVectorq))
+			self.eigenVectorQueue.put([[k1,k2],np.concatenate((cosines, sines), axis = 0)])
+		elif self.isDirichlet == True:
 			tempEigenVectorSinesp = np.arange(1,math.floor((self.n-1)/2)+1)
-			tempVectorq = np.arange(1,self.n+1)
+			tempEigenVectorCosinesp= np.arange(1, math.ceil((self.n-1)/2)+1)
+			tempVectorq = np.arange(1,self.n)
 			sines = np.sin(2*np.pi*(1/self.n)*np.add.outer(k1*tempEigenVectorSinesp, k2*tempVectorq))
-			#cosines = np.zeros(self.n-1,self.)
-
-
-
-
+			cosines = np.zeros((math.ceil((self.n-1)/2), self.n-1))
+			self.eigenVectorQueue.put([[k1,k2],np.concatenate((cosines, sines), axis = 0)])
 		
 	def computeEigenVectors(self):
 		pass
 
 
  		
-dfgf = DFGF_T2(1,100,20,True,False)
+dfgf = DFGF_T2(1,20,20,True,False)
 
 dfgf.computeEigenVector([10,12])
