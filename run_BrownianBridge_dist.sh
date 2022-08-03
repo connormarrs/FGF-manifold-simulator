@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=general                   # Name of partition
-#SBATCH --ntasks=48                           # Request 48 CPU cores
+#SBATCH --ntasks=64                           # Request 48 CPU cores
 #SBATCH --exclude=cn[66-69,71-136,153-256,265-320,325-328]
 #SBATCH --time=11:00:00                       # Job should run for up to 2 hours (for example)
 #SBATCH --mail-type=ALL                      # Event(s) that triggers email notification (BEGIN,END,FAIL,ALL)

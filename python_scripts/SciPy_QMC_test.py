@@ -24,8 +24,8 @@ if compute_distribution:
 	)
 	
 	with open('samples_SCIPY_MultivariateNormalQMC_n_10000_trials_20000.csv', 'w') as file:
-	    writer = csv.writer(file)
-	    writer.writerows(sample)
+		writer = csv.writer(file)
+		writer.writerows(sample)
 
 ###################################################################
 #	    Generate Data to Test Distribution of Max
