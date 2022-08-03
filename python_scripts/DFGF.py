@@ -59,7 +59,3 @@ class DFGF:
 	def setEigenVectors(self, vecs):
 		self.eigenVectors = vecs
 
-	def reuseArrays(self, eigenValues, eigenVectors, sample):
-		self.setEigenValues(eigenValues)
-		self.setEigenVectors(eigenVectors)
-		self.setSample(sample)
