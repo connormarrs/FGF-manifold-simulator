@@ -101,6 +101,7 @@ class DFGF_T2(DFGF.DFGF):
 
 	def runTrials(self):
 		self.coefficients.reshape(self.n,self.n,(self.n-1)**2)
+		self.sample.reshape()
 		#print(self.coefficients)
 	def computeMaxima(self):
 		pass

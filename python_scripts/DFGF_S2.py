@@ -47,7 +47,7 @@ class DFGF_S2(DFGF.DFGF):
         
     def computeCoeffs(self):
         numWorkers = mp.cpu_count()
-        pool = mp.Pool(numWorkers, initializer=self.check_process)
+        pool = mp.Pool(numWorkers)
         pool.map(self.computeCoefficientVector, [*range(self.numPoints)])
 
         for vector in range(self.numPoints):
@@ -59,9 +59,10 @@ class DFGF_S2(DFGF.DFGF):
     
     def evaluatePoint(self, i, sampleVector):
         result = 0
-        
+        print(type(self.coefficientsDict))
+        print(type(sampleVector))
         for j in range(self.numPoints - 1):
-            result = result + self.coefficients[i][j] * sampleVector[j]
+            result = result + self.coefficientsDict[i][j] * sampleVector[j]
             
         return result
     
