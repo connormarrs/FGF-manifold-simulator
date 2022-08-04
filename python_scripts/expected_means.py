@@ -36,10 +36,10 @@ EigenVectors = None
 
 
 for n_index in range(linspace.shape[0]):
-	for s_index in range(linspace_s.shape[0]):
-		if s_index == 0:
-			with open('output/expected_maxima_s_'+str(s_start)+'-'+str(s_stop)+'_n_'+str(linspace[n_index])+'_numTrials_'+str(numTrials)+'.csv', 'w', newline = '') as csvFile:
-				writer = csv.writer(csvFile)
+	with open('output/expected_maxima_s_'+str(s_start)+'-'+str(s_stop)+'_n_'+str(linspace[n_index])+'_numTrials_'+str(numTrials)+'.csv', 'w', newline = '') as csvFile:
+		writer = csv.writer(csvFile)
+		for s_index in range(linspace_s.shape[0]):
+			if s_index == 0:
 				dfgf = DFGF_S1.DFGF_S1(linspace_s[s_index],linspace[n_index],numTrials,dirichlet,True)
 				dfgf.runTrials()
 				dfgf.computeMaximaVector()
@@ -50,9 +50,7 @@ for n_index in range(linspace.shape[0]):
 				sample = dfgf.getSample()
 				eigenValues = dfgf.getEigenValues()
 				eigenVectors = dfgf.getEigenVectors()
-		elif s_index>0:
-			with open('output/expected_maxima_s_'+str(s_start)+'-'+str(s_stop)+'_n_'+str(linspace[n_index])+'_numTrials_'+str(numTrials)+'.csv', 'a', newline = '') as csvFile:
-				writer = csv.writer(csvFile)
+			elif s_index>0:
 				dfgf = DFGF_S1.DFGF_S1(linspace_s[s_index],linspace[n_index],numTrials,dirichlet,False)
 				dfgf.setParams(sample, eigenValues, eigenVectors)
 				dfgf.runTrials()
