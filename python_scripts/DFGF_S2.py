@@ -61,7 +61,7 @@ class DFGF_S2(DFGF.DFGF):
         result = 0
         
         for j in range(self.numPoints - 1):
-            result = result + self.coefficients[i][j] * sampleVector[j]
+            result = result + self.coefficientsDict[i][j] * sampleVector[j]
             
         return result
     
@@ -89,9 +89,6 @@ class DFGF_S2(DFGF.DFGF):
         self.computeMaxima()
         self.computeMeanOfMaxima()
         
-        print("Trial data length is off by: ")
-        print(len(self.trialDataDict) - self.numTrials)
-        
     def computeVectorMax(self, r):
         data = self.trialDataDict[r]
         M = data[0]
@@ -102,10 +99,9 @@ class DFGF_S2(DFGF.DFGF):
         self.maxima[r] = M
         
     def computeMaxima(self):
-        pool = mp.Pool()
-        pool.map(self.computeVectorMax, range(len(self.trialDataDict)))
-        pool.close()
-        pool.join()
+
+        for r in range(len(self.trialDataDict)):
+            self.computeVectorMax(r)
         
         
     def computeMeanOfMaxima(self):
