@@ -12,15 +12,15 @@ os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 # now we compute the growth of the expected maxima as a function of n.
 # set parameters for the simulation
 dirichlet = True
-n_start = 100
-n_stop = 300
-n_step = 50
+n_start = 500
+n_stop = 540
+n_step = 25
 
 s_start = 0.000000
 s_stop = 1.000000
-s_step = .001
+s_step = .005
 
-numTrials = 100
+numTrials = 1000
 
 linspace = np.arange(start = n_start, stop = n_stop+n_step, step = n_step)
 linspace_s = np.arange(start = s_start, stop = s_stop+s_step, step = s_step)
@@ -36,10 +36,10 @@ EigenVectors = None
 
 
 for n_index in range(linspace.shape[0]):
-	for s_index in range(linspace_s.shape[0]):
-		if s_index == 0:
-			with open('output/expected_maxima_s_'+str(s_start)+'-'+str(s_stop)+'_n_'+str(linspace[n_index])+'_numTrials_'+str(numTrials)+'.csv', 'w', newline = '') as csvFile:
-				writer = csv.writer(csvFile)
+	with open('output/expected_maxima_s_'+str(s_start)+'-'+str(s_stop)+'_n_'+str(linspace[n_index])+'_numTrials_'+str(numTrials)+'.csv', 'w', newline = '') as csvFile:
+		writer = csv.writer(csvFile)
+		for s_index in range(linspace_s.shape[0]):
+			if s_index == 0:
 				dfgf = DFGF_S1.DFGF_S1(linspace_s[s_index],linspace[n_index],numTrials,dirichlet,True)
 				dfgf.runTrials()
 				dfgf.computeMaximaVector()
@@ -50,9 +50,7 @@ for n_index in range(linspace.shape[0]):
 				sample = dfgf.getSample()
 				eigenValues = dfgf.getEigenValues()
 				eigenVectors = dfgf.getEigenVectors()
-		elif s_index>0:
-			with open('output/expected_maxima_s_'+str(s_start)+'-'+str(s_stop)+'_n_'+str(linspace[n_index])+'_numTrials_'+str(numTrials)+'.csv', 'a', newline = '') as csvFile:
-				writer = csv.writer(csvFile)
+			elif s_index>0:
 				dfgf = DFGF_S1.DFGF_S1(linspace_s[s_index],linspace[n_index],numTrials,dirichlet,False)
 				dfgf.setParams(sample, eigenValues, eigenVectors)
 				dfgf.runTrials()
