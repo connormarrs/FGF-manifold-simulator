@@ -43,7 +43,7 @@ class DFGF_T2(DFGF.DFGF):
 		arg1 = (2*np.pi)/(self.n) * np.arange(1, self.n)
 		arg2 = (2*np.pi)/(self.n) * np.arange(1, self.n)
 		self.eigenValues = normalizer* (2-np.subtract.outer(np.cos(arg1),np.cos(arg2)))
-		self.denominators = np.power(self.eigenValues, self.s)
+		self.denominators = np.power(self.eigenValues, -self.s)
 
 	def computeEigenVector(self, ks):
 		k1 = ks[0]
@@ -93,21 +93,40 @@ class DFGF_T2(DFGF.DFGF):
 		pool.close()
 		for pair in kInputs:
 			self.coefficients[pair[0],pair[1]] = self.coefficientsDict[repr(pair)]
-		print(self.coefficients)
 
-	def runTrialsHelper(self, ks):
-		k1 = ks[0]
-		k2 = ks[1]
-
+	def evaluate(self, trialNum):
+		self.trialDataQueue.put([trialNum,np.dot(self.coefficients, self.sample[trialNum])])
 	def runTrials(self):
-		self.coefficients.reshape(self.n,self.n,(self.n-1)**2)
-		self.sample.reshape()
-		#print(self.coefficients)
+		self.coefficients = self.coefficients.reshape(self.n,self.n,(self.n-1)**2)
+		self.sample = self.sample.reshape(self.numTrials, (self.n-1)**2)
+		# python multiprocessing
+		# instantiate threadpoo
+		num_workers = mp.cpu_count()
+		pool  = mp.Pool(num_workers)
+		# evaluate trials
+		pool.map(self.evaluate, [*range(self.numTrials)])
+		# gets the trial data from the associated multiprocessing queue and places them into the associated dictionary
+		# this ensures data is entered in the correct order and protects against racing
+		for trial in range(self.numTrials):
+			temp = self.trialDataQueue.get()
+			self.trialDataDict[temp[0]] = temp[1]
+		for i in range(self.numTrials):
+			self.trialData[i] = self.trialDataDict[i]
+
+		pool.close()
+		pool.join()
+
 	def computeMaxima(self):
-		pass
+		temp = 0.5*(self.trialData[:,:,math.ceil(self.n/2)]+self.trialData[:,:,math.floor(self.n/2)]).reshape(self.numTrials,self.n,1)
+		maximaCandidates = self.trialData[:,:,0:math.floor(self.n/2)]
+		maximaCandidates = np.append(maximaCandidates, temp, axis = 2)
+		print(maximaCandidates.shape)
+		print(maximaCandidates[:,math.ceil(self.n/2),:].shape, maximaCandidates[:,math.floor(self.n/2),:].shape)
+		temp = 0.5*(maximaCandidates[:,math.ceil(self.n/2),:]+maximaCandidates[:,math.floor(self.n/2),:]).reshape(self.numTrials,1,maximaCandidates.shape[2])
+		maximaCandidates = maximaCandidates[:,0:math.floor(self.n/2),:]
+		maximaCandidates = np.append(maximaCandidates, temp, axis = 1)
+		maximaCandidates = maximaCandidates.reshape(self.numTrials, (maximaCandidates.shape[1]*maximaCandidates.shape[2]))
+		self.maximaVector = np.amax(maximaCandidates, axis=1)
+
 	def computeMeanOfMaxima(self):
-		pass
-
-dfgf = DFGF_T2(1,5,5,True,True)
-
-dfgf.runTrials()
+		self.meanOfMaxima = np.mean(self.maximaVector)

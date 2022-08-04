@@ -45,7 +45,7 @@ class Laplace_S2:
             self.bandwidths.append(0)
 
         for k in range(self.step_size, self.numPoints+1, self.step_size):
-            self.bandwidths[k] = self.bandwidthParam / (i ** (1 / 16))
+            self.bandwidths[k] = self.bandwidthParam / (i ** (1 / 13))
             
     #helper function for computinig the l-th legendre polynomial at input x
     def computeLegendre(self, x, l):

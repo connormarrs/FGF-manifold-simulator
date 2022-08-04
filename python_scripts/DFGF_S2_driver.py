@@ -9,13 +9,13 @@ import DFGF_S2
 import Laplace_S2
 
 n_start = 10              #number of points to start at
-n_stop = 100              #maximum number of points to be computed
+n_stop = 500              #maximum number of points to be computed
 n_step = 10               #increment size between number of points
 
 s = 0.5                   #DFGF parameter
 
-boundingParam = 0.1       #how far the eigenvalues should stay bounded away from 0
-bandwidthParam = 1        #constant for determining the size of bandwidth parameters for laplacian
+boundingParam = .1       #how far the eigenvalues should stay bounded away from 0
+bandwidthParam = .001      #constant for determining the size of bandwidth parameters for laplacian
 
 numTrials = 100           #how many trials should be run for each number of points
 
@@ -37,5 +37,6 @@ if __name__ == '__main__':
         
     #np.savetxt('../output/expected_maxima_s_'+str(s)+'_n_'+str(n_start)+'-'+str(n_stop)+'_numTrials_'+str(numTrials)+'.csv', maxima, delimiter=",")
     
-    print(min(laplace.getSpectralGaps()))
+    print(max(laplace.getSpectralGaps()))
+    print(laplace.getSpectralGaps())
     print(laplace.getComputeCounts())
