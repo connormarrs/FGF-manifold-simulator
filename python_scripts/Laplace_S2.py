@@ -4,12 +4,14 @@ import random as rand
 #Class for precomputing random grid points and eigensystem of graph laplacians
 #For use in DFGF_S2 driver
 
-class LaplaceS2:
+class Laplace_S2:
     
     numPoints = 0         #number of points on the sphere that should be generated 
     step_size = 0         #increment between size of laplacians
     grid = []             #list of all randomly generated points
     bandwidths = []       #list of parameters that determine edge weights
+    boundingParam = 0.0   #how far the spectral gap should stay bounded from 0
+    bandWidthParam = 0.0  #constant which helps determine size of bandwidths
     eigenVals = []        #list of lists of eigenvalues for each laplacian
     eigenVects = []       #list of lists of eigenvectors for each laplacian
     spectralGaps = []
@@ -19,7 +21,7 @@ class LaplaceS2:
     def __init__(self, numPoints, step, boundingParam, bandwidthParam):
         self.numPoints = numPoints
         self.step_size = step
-        self.boundinParam = boundingParam
+        self.boundingParam = boundingParam
         self.bandwidthParam = bandwidthParam
         
         self.makeGrid()
@@ -39,8 +41,11 @@ class LaplaceS2:
             
     #initializes the bandwidth parameters for each laplacian
     def setBandwidths(self):
-        for i in range(1, self.numPoints+1):
-            self.bandwidths.append(self.bandwidthParam / (i ** (1 / 16)))
+        for i in range(self.numPoints + 1):
+            self.bandwidths.append(0)
+
+        for k in range(self.step_size, self.numPoints+1, self.step_size):
+            self.bandwidths[k] = self.bandwidthParam / (i ** (1 / 16))
             
     #helper function for computinig the l-th legendre polynomial at input x
     def computeLegendre(self, x, l):
@@ -88,39 +93,42 @@ class LaplaceS2:
             
             for j in range(k):
                 if i != j:
-                    laplacian[i].append(self.computeEdgeWeight(self.grid[i], self.grid[j], self.bandwidths[k], k))
+                    laplacian[i].append(-1 * self.computeEdgeWeight(self.grid[i], self.grid[j], self.bandwidths[k], k))
                     
                 else:
                     laplacian[i].append(0)
                     
             
         for i in range(k):
-            laplacian[i][i] = -sum(laplacian[i])
+            laplacian[i][i] = -1 * sum(laplacian[i])
             
         return laplacian
     
     #Calculates 2nd smallest eigenvalue of laplacian; 
     #this value should stay bounded away from 0
     def findSpectralGap(self, eVals):
+
+        mins = [eVals[0], eVals[1]]
         
         currentMin = eVals[0]
-        prevMin = None
+        prevMin = eVals[1]
         
-        for i in range(1, len(eVals)):
-            if eVals[i] < currentMin:
-                prevMin = currentMin
-                currentMin = eVals[i]
-                
-        return prevMin
+        for i in range(2, len(eVals)):
+            if eVals[i] < mins[0]:
+                mins[0] = eVals[i]
+            elif eVals[i] < mins[1]:
+                mins[1] = eVals[i]
+        
+        return max(mins)
     
     #Calculates eigenvectors and eigenvalues of each laplacian
-    def computeEigensystems(self):
-        for k in range(self.step_size, self.numPoints + 1, step = self.step_size):
+    def computeEigenSystems(self):
+        for k in range(self.step_size, self.numPoints + 1, self.step_size):
             computeNewLaplacian = True
             
             computeCount = 1
             while computeNewLaplacian:
-                laplacian = self.computelaplacian(k)
+                laplacian = self.computeLaplacian(k)
                 
                 [eVals, eVects] = np.linalg.eig(laplacian)
 
@@ -135,6 +143,8 @@ class LaplaceS2:
                 else:
                     computeCount += 1
                     self.bandwidths[k] = 0.9 * self.bandwidths[k] + 0.1 * self.bandwidths[k-1]
+                    print(str(computeCount)+", "+str(spectralGap)+", "+str(k))
+                    print(eVals)
                     
             self.eigenVals.append(eVals)
             self.eigenVects.append(eVects)

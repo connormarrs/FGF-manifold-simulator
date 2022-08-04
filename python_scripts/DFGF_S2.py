@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import random as rand
 import multiprocessing as mp
 import DFGF
@@ -14,32 +15,37 @@ class DFGF_S2(DFGF.DFGF):
     npTrialData = []
     maxima = {}
     meanOfMaxima = 0.0
+    s = 0.0
+    numPoints = 0
     
     def __init__(self, numPoints, s, numTrials, eigenVals, eigenVects, grid):
-        self.n = numPoints
+        self.numPoints = numPoints
         self.s = s
         self.numTrials = numTrials
         self.eigenVals = eigenVals
+        print(self.eigenVals)
         self.eigenVects = eigenVects
         #convert cartesian grid into spherical coordinates:
         for i in range(len(grid)):
-            self.grid.append([np.arctan(grid[i][1] / grid[i][0]) * np.sign(x), np.arccos(grid[i][2])])
+            self.grid.append([np.arctan(grid[i][1] / grid[i][0]) * np.sign(grid[i][0]), np.arccos(grid[i][2])])
         
         #self.num_workers = mp.cpu.count()
-        self.pool = mp.pool()
+        #self.pool = mp.Pool()
         #self.taskQueue = mp.Queue()
         #pool.map(self.function, list_of_args (e.g. range(self.numTrials)))
         
-        for r in range(numTrials):
+        for r in range(self.numTrials):
             self.gaussianVector.append([])
-            for i in range(numPoints):
-                self.gaussianVector[i].append(rand.gauss(0,1))
-        
+            for i in range(self.numPoints):
+                self.gaussianVector[r].append(rand.gauss(0,1))
         
         self.computeCoeffs()
         
     def computeCoeffs(self):
-        self.pool.map(self.computeCoefficientVector, range(self.numPoints))
+        pool = mp.Pool()
+        pool.map(self.computeCoefficientVector, range(self.numPoints))
+        pool.close()
+        pool.join()
         
         print("Coefficients length is off by: ")
         print(len(self.coefficients) - self.numPoints)
@@ -48,36 +54,41 @@ class DFGF_S2(DFGF.DFGF):
     def computeCoefficientVector(self, r):
         coeffs_r = []
         
-        for i in range(self.numPoints):
+        for i in range(1, self.numPoints):
             coeffs_r.append(self.computeCoefficientPoint(r,i))
             
         self.coefficients[r] = coeffs_r
     
-    def computeCoefficientPoint(self, r,i):
-        return self.eigenVects[self.numPoints - 1][i][r] / (self.eigenVals[self.numPoints - 1][i] ** s)
+    def computeCoefficientPoint(self, r, i):
+        return self.eigenVects[i][r] / math.pow(self.eigenVals[i], self.s)
     
     def evaluatePoint(self, i, sampleVector):
         result = 0
-        
-        for j in range(self.numPoints):
+        print(self.coefficients)
+        for j in range(self.numPoints-1):
+
             result = result + self.coefficients[i][j] * sampleVector[j]
             
         return result
     
     def evaluate(self, r):
+        print(self.numTrials - r)
         evaluations = []
         
         for i in range(self.numPoints):
-            evaluations.append([self.grid[i][0], self.grid[i][1], self.evaluatePoint(i, self.gaussianVector[i])])
+            evaluations.append([self.evaluatePoint(i, self.gaussianVector[r])])
             
         self.trialData[r] = evaluations
     
     def runTrials(self):
-        self.pool.map(self.evaluate, range(self.numTrials))
+        pool = mp.Pool()
+        pool.map(self.evaluate, [*range(self.numTrials)])
+        pool.close()
+        pool.join()
         
         self.npTrialData = np.array(list(self.trialData.items()))
         self.computeMaxima()
-        self.computeEmpMean()
+        self.computeMeanOfMaxima()
         
         print("Trial data length is off by: ")
         print(len(self.trialData) - self.numTrials)
@@ -92,7 +103,10 @@ class DFGF_S2(DFGF.DFGF):
         self.maxima[r] = M
         
     def computeMaxima(self):
-        self.pool.map(self.computeVectorMax, range(len(self.trialData)))
+        pool = mp.Pool()
+        pool.map(self.computeVectorMax, range(len(self.trialData)))
+        pool.close()
+        pool.join()
         
         
     def computeMeanOfMaxima(self):
