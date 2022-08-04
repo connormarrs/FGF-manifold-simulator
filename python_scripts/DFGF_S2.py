@@ -64,8 +64,9 @@ class DFGF_S2(DFGF.DFGF):
     
     def evaluatePoint(self, i, sampleVector):
         result = 0
-        
-        for j in range(self.numPoints):
+        print(self.coefficients)
+        for j in range(self.numPoints-1):
+
             result = result + self.coefficients[i][j] * sampleVector[j]
             
         return result

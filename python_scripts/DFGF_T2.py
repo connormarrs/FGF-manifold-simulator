@@ -26,7 +26,7 @@ class DFGF_T2(DFGF.DFGF):
 		if compute:
 			self.computeSample()
 			self.computeEigenValues()
-			# self.computeEigenVectors()
+			self.computeEigenVectors()
 			# self.computeCoefficients()
 
 	def computeSample(self):
@@ -64,10 +64,28 @@ class DFGF_T2(DFGF.DFGF):
 			self.eigenVectorQueue.put([[k1,k2],np.concatenate((cosines, sines), axis = 0)])
 		
 	def computeEigenVectors(self):
-		pass
+		kRange = [*range(self.n)]
+		print(kRange)
 
+		kInputs = [[k1, k2] for k1 in kRange for k2 in kRange]
+		kInputs2 = []
+		for k1 in range(len(kRange)):
+			for k2 in range(len(kRange)):
+				kInputs2.append([k1,k2])
+		print(kInputs2 == kInputs)
+		num_workers = mp.cpu_count()
+		pool  = mp.Pool(num_workers)
+		print(kInputs)
+		pool.map(self.computeEigenVector, [*kInputs])
 
- 		
-dfgf = DFGF_T2(1,20,20,True,False)
+		for k in range(len(kInputs)):
+			temp = self.eigenVectorQueue.get()
+			#print(temp)
+			print(repr(temp[0]))
+			self.eigenVectorDict[repr(temp[0])] = temp[1]
+		for pair in kInputs:
+			self.eigenVectors[pair[0],pair[1]] = self.eigenVectorDict[repr(pair)]
 
-dfgf.computeEigenVector([10,12])
+dfgf = DFGF_T2(1,20,20,True,True)
+
+dfgf.computeEigenVectors()
