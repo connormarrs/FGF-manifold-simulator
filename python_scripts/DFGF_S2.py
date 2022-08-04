@@ -3,11 +3,10 @@ import math
 import random as rand
 import multiprocessing as mp
 import DFGF
+
 #from Laplace_S2 import LaplaceS2
 
 class DFGF_S2(DFGF.DFGF):
-    eigenVals = []
-    eigenVects = []
     grid = []
     coefficients = {}
     gaussianVector = []
@@ -15,8 +14,7 @@ class DFGF_S2(DFGF.DFGF):
     npTrialData = []
     maxima = {}
     meanOfMaxima = 0.0
-    s = 0.0
-    numPoints = 0
+
     
     def __init__(self, numPoints, s, numTrials, eigenVals, eigenVects, grid):
         self.numPoints = numPoints
@@ -25,6 +23,7 @@ class DFGF_S2(DFGF.DFGF):
         self.eigenVals = eigenVals
         print(self.eigenVals)
         self.eigenVects = eigenVects
+
         #convert cartesian grid into spherical coordinates:
         for i in range(len(grid)):
             self.grid.append([np.arctan(grid[i][1] / grid[i][0]) * np.sign(grid[i][0]), np.arccos(grid[i][2])])
@@ -40,32 +39,47 @@ class DFGF_S2(DFGF.DFGF):
                 self.gaussianVector[r].append(rand.gauss(0,1))
         
         self.computeCoeffs()
+
+    def check_process(self):
+        print('starting '+mp.current_process().name)
+
+    def computeCoefficientPoint(self, r, i):
+        return self.eigenVects[i][r] / math.pow(self.eigenVals[i], self.s)
+
+    def computeCoefficientVector(self, r):
+        coeffs_r = []
+        #print(r)
+        
+        for i in range(1, self.numPoints):
+            coeffs_r.append(self.computeCoefficientPoint(r,i))
+
+        self.coefficientsQueue.put([r, coeffs_r])
+        print(self.coefficientsQueue.qsize())
         
     def computeCoeffs(self):
-        pool = mp.Pool()
-        pool.map(self.computeCoefficientVector, range(self.numPoints))
+        numWorkers = mp.cpu_count()
+        pool = mp.Pool(numWorkers, initializer=self.check_process)
+        pool.map(self.computeCoefficientVector, [*range(self.numPoints)])
+
+        print(self.coefficientsQueue.qsize())
+        print("jobs completed")
+
+        for vector in range(self.numPoints):
+            temp = self.coefficientsQueue.get()
+            print(temp)
+            self.coefficientsDict[temp[0]] = temp[1]
+            print("vector #"+str(vector)+" added")
+
         pool.close()
         pool.join()
         
         print("Coefficients length is off by: ")
-        print(len(self.coefficients) - self.numPoints)
-        
-        
-    def computeCoefficientVector(self, r):
-        coeffs_r = []
-        
-        for i in range(1, self.numPoints):
-            coeffs_r.append(self.computeCoefficientPoint(r,i))
-            
-        self.coefficients[r] = coeffs_r
-    
-    def computeCoefficientPoint(self, r, i):
-        return self.eigenVects[i][r] / math.pow(self.eigenVals[i], self.s)
+        print(len(self.coefficientsDict) - self.numPoints)
     
     def evaluatePoint(self, i, sampleVector):
         result = 0
         
-        for j in range(self.numPoints):
+        for j in range(self.numPoints - 1):
             result = result + self.coefficients[i][j] * sampleVector[j]
             
         return result
