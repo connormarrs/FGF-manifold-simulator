@@ -13,13 +13,17 @@ os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 # set parameters for the simulation
 dirichlet = True
 compute = True
-n_start = 1000
-n_stop = 20000
-n_step = 50
+#n_start = 1000
+#n_stop = 20000
+#n_step = 50
+n_start = 10
+n_stop = 100
+n_step = 10
 
 s = 0.5
 
-numTrials = 4000
+#numTrials = 4000
+numTrials = 100
 
 linspace = np.arange(start = n_start, stop = n_stop+n_step, step = n_step)
 sample = None
