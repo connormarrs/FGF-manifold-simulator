@@ -27,7 +27,7 @@ class DFGF_T2(DFGF.DFGF):
 			self.computeSample()
 			self.computeEigenValues()
 			self.computeEigenVectors()
-			# self.computeCoefficients()
+			self.computeCoefficients()
 
 	def computeSample(self):
 		dist = qmc.MultivariateNormalQMC(
@@ -78,16 +78,35 @@ class DFGF_T2(DFGF.DFGF):
 			self.eigenVectors[pair[0],pair[1]] = self.eigenVectorDict[repr(pair)]
 
 	def computeCoefficientsHelper(self,ks):
-		pass
+		k1 = ks[0]
+		k2 = ks[1]
+		self.coefficientsQueue.put([repr(ks), np.multiply(self.eigenVectors[k1,k2], self.denominators)])
 	def computeCoefficients(self):
-		pass
+		kRange = [*range(self.n)]
+		kInputs = [(k1, k2) for k1 in kRange for k2 in kRange]
+		num_workers = mp.cpu_count()
+		pool  = mp.Pool(num_workers)
+		pool.map(self.computeCoefficientsHelper, kInputs)
+		for k in range(len(kInputs)):
+			temp = self.coefficientsQueue.get()
+			self.coefficientsDict[temp[0]] = temp[1]
+		pool.close()
+		for pair in kInputs:
+			self.coefficients[pair[0],pair[1]] = self.coefficientsDict[repr(pair)]
+		print(self.coefficients)
+
+	def runTrialsHelper(self, ks):
+		k1 = ks[0]
+		k2 = ks[1]
+
 	def runTrials(self):
-		pass
+		self.coefficients.reshape(self.n,self.n,(self.n-1)**2)
+		#print(self.coefficients)
 	def computeMaxima(self):
 		pass
 	def computeMeanOfMaxima(self):
 		pass
 
-dfgf = DFGF_T2(1,20,20,True,True)
+dfgf = DFGF_T2(1,5,5,True,True)
 
-dfgf.computeEigenVectors()
+dfgf.runTrials()
