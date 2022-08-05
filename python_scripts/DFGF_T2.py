@@ -31,12 +31,11 @@ class DFGF_T2(DFGF.DFGF):
 
 	def computeSample(self):
 		dist = qmc.MultivariateNormalQMC(
-			mean = np.zeros(self.n-1)
+			mean = np.zeros((self.n-1)**2)
 			)
-		for i in range(self.numTrials):
-			self.sample[i] = np.array(
-				dist.random(self.n-1)
-				)
+		self.sample = np.array(
+			dist.random(self.numTrials)
+			).reshape(self.numTrials,self.n-1,self.n-1)
 
 	def computeEigenValues(self):
 		normalizer = np.power(self.n, 2) / (2* np.power(np.pi, 2))
@@ -116,12 +115,10 @@ class DFGF_T2(DFGF.DFGF):
 		pool.close()
 		pool.join()
 
-	def computeMaxima(self):
+	def computeMaximaVector(self):
 		temp = 0.5*(self.trialData[:,:,math.ceil(self.n/2)]+self.trialData[:,:,math.floor(self.n/2)]).reshape(self.numTrials,self.n,1)
 		maximaCandidates = self.trialData[:,:,0:math.floor(self.n/2)]
 		maximaCandidates = np.append(maximaCandidates, temp, axis = 2)
-		print(maximaCandidates.shape)
-		print(maximaCandidates[:,math.ceil(self.n/2),:].shape, maximaCandidates[:,math.floor(self.n/2),:].shape)
 		temp = 0.5*(maximaCandidates[:,math.ceil(self.n/2),:]+maximaCandidates[:,math.floor(self.n/2),:]).reshape(self.numTrials,1,maximaCandidates.shape[2])
 		maximaCandidates = maximaCandidates[:,0:math.floor(self.n/2),:]
 		maximaCandidates = np.append(maximaCandidates, temp, axis = 1)
@@ -130,3 +127,11 @@ class DFGF_T2(DFGF.DFGF):
 
 	def computeMeanOfMaxima(self):
 		self.meanOfMaxima = np.mean(self.maximaVector)
+
+
+	def setParams(self, sample, eigenValues, eigenVectors):
+		self.setSample(sample)
+		self.setEigenValues(eigenValues)
+		self.setEigenVectors(eigenVectors)
+		self.denominators = np.power(self.eigenValues, -self.s)
+		self.computeCoefficients()
