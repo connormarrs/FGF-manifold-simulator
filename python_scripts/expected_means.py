@@ -12,9 +12,9 @@ os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 # now we compute the growth of the expected maxima as a function of n.
 # set parameters for the simulation
 dirichlet = True
-n_start = 500
-n_stop = 2000
-n_step = 10
+n_start = 950
+n_stop = 2500
+n_step = 25
 
 s_start = 0.000000
 s_stop = 0.500000
