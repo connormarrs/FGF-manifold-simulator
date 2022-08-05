@@ -12,15 +12,24 @@ os.environ["OMP_NUM_THREADS"] = str(mp.cpu_count())
 # now we compute the growth of the expected maxima as a function of n.
 # set parameters for the simulation
 dirichlet = True
+<<<<<<< HEAD
+n_start = 950
+n_stop = 2500
+n_step = 25
+
+s_start = 0.000000
+s_stop = 0.500000
+=======
 n_start = 500
 n_stop = 2000
 n_step = 25
 
 s_start = 0.000000
 s_stop = 0.5
+>>>>>>> 58bca9100b69a0bc27edefae2fd099dc29dac3f3
 s_step = .005
 
-numTrials = 1000
+numTrials = 2000
 
 linspace = np.arange(start = n_start, stop = n_stop+n_step, step = n_step)
 linspace_s = np.arange(start = s_start, stop = s_stop+s_step, step = s_step)
