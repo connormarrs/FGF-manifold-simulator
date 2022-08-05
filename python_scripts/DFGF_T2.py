@@ -46,7 +46,8 @@ class DFGF_T2(DFGF.DFGF):
 
 	def computeEigenVector(self, ks):
 		k1 = ks[0]
-		k2 = ks[0]
+		k2 = ks[1]
+		print(k1,k2)
 		if self.isDirichlet==False:
 			tempEigenVectorSinesp = np.arange(1,math.floor((self.n-1)/2)+1)
 			tempEigenVectorCosinesp= np.arange(1, math.ceil((self.n-1)/2)+1)
@@ -93,6 +94,8 @@ class DFGF_T2(DFGF.DFGF):
 		for pair in kInputs:
 			self.coefficients[pair[0],pair[1]] = self.coefficientsDict[repr(pair)]
 
+
+
 	def evaluate(self, trialNum):
 		self.trialDataQueue.put([trialNum,np.dot(self.coefficients, self.sample[trialNum])])
 	def runTrials(self):
@@ -135,3 +138,9 @@ class DFGF_T2(DFGF.DFGF):
 		self.setEigenVectors(eigenVectors)
 		self.denominators = np.power(self.eigenValues, -self.s)
 		self.computeCoefficients()
+
+dfgf = DFGF_T2(1,20, 1, True, True)
+
+dfgf.runTrials()
+
+#print(dfgf.getTrialData())
